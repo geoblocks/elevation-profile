@@ -116,6 +116,7 @@ export class ElevationProfile extends LitElement {
       new CustomEvent('over', {
         detail: {
           coordinate: this.lines[index],
+          position: this.pointerPosition
         }
       }),
     );
