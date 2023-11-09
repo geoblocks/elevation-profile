@@ -49,7 +49,7 @@ export class ElevationProfile extends LitElement {
       this.plotData = this.lines.map((coordinate) => [coordinate[3], coordinate[2]]);
 
       this.scaleX.domain(extent(this.plotData, (data) => data[0]));
-      this.scaleY.domain(extent(this.plotData, (data) => data[1]));
+      this.scaleY.domain(extent(this.plotData, (data) => data[1])).nice();
     }
   }
 
