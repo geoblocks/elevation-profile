@@ -107,7 +107,7 @@ export class ElevationProfile extends LitElement {
 
   private pointerMove(event: PointerEvent) {
     const pointerDistance = this.scaleX.invert(pointer(event)[0]);
-    const index = this.bisectDistance(this.plotData, pointerDistance);
+    const index = Math.min(this.bisectDistance(this.plotData, pointerDistance), this.plotData.length - 1);
     const data = this.plotData[index];
 
     this.pointerPosition = [this.scaleX(data[0]), this.scaleY(data[1])];
@@ -115,7 +115,7 @@ export class ElevationProfile extends LitElement {
     this.dispatchEvent(
       new CustomEvent('over', {
         detail: {
-          data: this.lines[index],
+          coordinate: this.lines[index],
         }
       }),
     );
