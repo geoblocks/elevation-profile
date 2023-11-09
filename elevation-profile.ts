@@ -111,10 +111,19 @@ export class ElevationProfile extends LitElement {
     const data = this.plotData[index];
 
     this.pointerPosition = [this.scaleX(data[0]), this.scaleY(data[1])];
+
+    this.dispatchEvent(
+      new CustomEvent('over', {
+        detail: {
+          data: this.lines[index],
+        }
+      }),
+    );
   }
 
   private pointerOut() {
     this.pointerPosition = [0, 0];
+    this.dispatchEvent(new CustomEvent('out'));
   }
 
   createRenderRoot() {
