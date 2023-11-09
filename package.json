@@ -1,0 +1,22 @@
+{
+  "name": "@geoblocks/elevation-profile",
+  "version": "0.0.1",
+  "license": "BSD-3-Clause",
+  "repository": "github:geoblocks/elevation-profile",
+  "source": "elevation-profile.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "@lit-labs/observers": "2.0.2",
+    "d3": "7.8.5",
+    "lit": "3.0.2"
+  },
+  "devDependencies": {
+    "@types/d3": "7.4.3",
+    "parcel": "2.10.2"
+  }
+}
