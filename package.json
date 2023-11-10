@@ -7,6 +7,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "elevation-profile.ts",
+    "dist/"
+  ],
   "targets": {
     "demo": {
       "context": "browser",
