@@ -3,17 +3,11 @@ import {customElement, state, property} from 'lit/decorators.js';
 import {ResizeController} from '@lit-labs/observers/resize-controller.js';
 import {createRef, ref} from 'lit/directives/ref.js';
 
-import {
-  extent,
-  scaleLinear,
-  line,
-  area,
-  axisBottom,
-  axisLeft,
-  select,
-  pointer,
-  bisector,
-} from 'd3';
+import {extent, bisector} from 'd3-array';
+import {scaleLinear} from 'd3-scale';
+import {line, area} from 'd3-shape';
+import {axisBottom, axisLeft} from 'd3-axis';
+import {select, pointer} from 'd3-selection';
 
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {

@@ -7,7 +7,16 @@
   "publishConfig": {
     "access": "public"
   },
+  "targets": {
+    "demo": {
+      "context": "browser",
+      "distDir": "build",
+      "publicUrl": "./"
+    }
+  },
   "scripts": {
+    "build-demo": "parcel build --target demo index.html",
+    "publish-demo": "rm -rf build && npm run build-demo && gh-pages -d build",
     "start": "parcel index.html"
   },
   "dependencies": {
@@ -17,6 +26,7 @@
   },
   "devDependencies": {
     "@types/d3": "7.4.3",
+    "gh-pages": "6.0.0",
     "parcel": "2.10.2"
   }
 }
