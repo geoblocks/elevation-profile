@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license": "BSD-3-Clause",
   "repository": "github:geoblocks/elevation-profile",
+  "type": "module",
   "source": "elevation-profile.ts",
   "main": "dist/elevation-profile.js",
   "types": "dist/elevation-profile.d.ts",
@@ -13,11 +14,18 @@
     "elevation-profile.ts",
     "dist/"
   ],
+  "targets": {
+    "demo": {
+      "context": "browser",
+      "distDir": "build",
+      "publicUrl": "./"
+    }
+  },
   "scripts": {
     "start": "parcel index.html",
     "build": "rm -rf dist && parcel build",
-    "build-demo": "parcel build index.html",
-    "publish-demo": "rm -rf dist && npm run build-demo && gh-pages -d dist"
+    "build-demo": "parcel build --target demo index.html",
+    "publish-demo": "rm -rf build && npm run build-demo && gh-pages -d build"
   },
   "dependencies": {
     "@lit-labs/observers": "2.0.2",
@@ -29,8 +37,11 @@
     "lit": "3.0.2"
   },
   "devDependencies": {
-    "@types/d3": "7.4.3",
+    "@parcel/packager-ts": "2.10.2",
+    "@parcel/transformer-typescript-tsc": "2.10.2",
+    "@parcel/transformer-typescript-types": "2.10.2",
     "gh-pages": "6.0.0",
-    "parcel": "2.10.2"
+    "parcel": "2.10.2",
+    "typescript": "5.2.2"
   }
 }

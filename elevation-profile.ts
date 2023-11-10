@@ -12,14 +12,14 @@ import {select, pointer} from 'd3-selection';
 
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
-  @property({type: Array}) lines = [];
+  @property({type: Array}) lines: number[][] = [];
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
 
   @state() pointer = {x: 0, y: 0};
   private resizeController = new ResizeController(this, {});
 
-  private plotData;
+  private plotData: number[][] = [];
   private scaleX = scaleLinear();
   private scaleY = scaleLinear();
 
