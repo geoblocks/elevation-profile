@@ -12,8 +12,8 @@ import {select, pointer} from 'd3-selection';
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
   @property({type: Array}) lines = [];
-  @state() pointer = {x: 0, y: 0};
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
+  @state() pointer = {x: 0, y: 0};
   private resizeController = new ResizeController(this, {});
 
   private plotData;
@@ -28,15 +28,17 @@ export class ElevationProfile extends LitElement {
   private area = area()
     .x((point) => this.scaleX(point[0]))
     .y1((point) => this.scaleY(point[1]));
-  // FIXME: switch between km and m
   private xAxis = axisBottom(this.scaleX)
     .tickFormat((i) => i + ' m');
-  private yAxis = axisLeft(this.scaleY);
-  private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
+  private yAxis = axisLeft(this.scaleY)
+    .tickFormat((i) => i + ' m');
+    private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
+    private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
   private xRef = createRef();
   private yRef = createRef();
   private yGridRef = createRef();
+  private xGridRef = createRef();
 
   willUpdate(changedProperties) {
     if (changedProperties.has('lines')) {
@@ -57,14 +59,24 @@ export class ElevationProfile extends LitElement {
     this.area.y0(height - this.margin.bottom);
 
     this.yGrid.tickSize(-width + this.margin.left + this.margin.right);
+    this.xGrid.tickSize(height - this.margin.top - this.margin.bottom);
+
+    const xTicks = width / 100;
+    const yTicks = height / 20;
+    this.xAxis.ticks(xTicks);
+    this.xGrid.ticks(xTicks);
+    this.yAxis.ticks(yTicks);
+    this.yGrid.ticks(yTicks);
 
     select(this.xRef.value).call(this.xAxis);
     select(this.yRef.value).call(this.yAxis);
+    select(this.xGridRef.value).call(this.xGrid);
     select(this.yGridRef.value).call(this.yGrid);
 
     return svg`
       <svg width="${width}" height="${height}">
         <g class="grid y" ${ref(this.yGridRef)} transform="translate(${this.margin.left}, 0)" />
+        <g class="grid x" ${ref(this.xGridRef)} transform="translate(0, ${this.margin.bottom})" />
         <g class="axis x" ${ref(this.xRef)} transform="translate(0, ${height - this.margin.bottom})" />
         <g class="axis y" ${ref(this.yRef)} transform="translate(${this.margin.left}, 0)" />
         <path class="area" d="${this.area(this.plotData)}" />
