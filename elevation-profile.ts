@@ -147,3 +147,10 @@ export class ElevationProfile extends LitElement {
     return this;
   }
 }
+
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'elevation-profile': ElevationProfile;
+  }
+}
