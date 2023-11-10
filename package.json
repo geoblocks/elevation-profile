@@ -1,6 +1,6 @@
 {
   "name": "@geoblocks/elevation-profile",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "license": "BSD-3-Clause",
   "repository": "github:geoblocks/elevation-profile",
   "source": "elevation-profile.ts",
@@ -11,21 +11,19 @@
     "elevation-profile.ts",
     "dist/"
   ],
-  "targets": {
-    "demo": {
-      "context": "browser",
-      "distDir": "build",
-      "publicUrl": "./"
-    }
-  },
   "scripts": {
-    "build-demo": "parcel build --target demo index.html",
-    "publish-demo": "rm -rf build && npm run build-demo && gh-pages -d build",
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "build": "rm -rf dist && parcel build",
+    "build-demo": "parcel build index.html",
+    "publish-demo": "rm -rf dist && npm run build-demo && gh-pages -d dist"
   },
   "dependencies": {
     "@lit-labs/observers": "2.0.2",
-    "d3": "7.8.5",
+    "d3-array": "3.2.4",
+    "d3-axis": "3.0.0",
+    "d3-scale": "4.0.2",
+    "d3-selection": "3.0.0",
+    "d3-shape": "3.2.0",
     "lit": "3.0.2"
   },
   "devDependencies": {
