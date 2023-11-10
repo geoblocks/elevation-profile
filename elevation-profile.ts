@@ -18,7 +18,7 @@ import {
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
   @property({type: Array}) lines = [];
-  @state() pointerPosition = [0, 0];
+  @state() pointer = {x: 0, y: 0};
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   private resizeController = new ResizeController(this, {});
 
@@ -70,29 +70,24 @@ export class ElevationProfile extends LitElement {
 
     return svg`
       <svg width="${width}" height="${height}">
-        <defs>
-          <!-- FIXME: unique id -->
-          <clipPath id="clip">
-            <rect
-              width="${this.pointerPosition[0]}"
-              height="${height}"
-            />
-          </clipPath>
-        </defs>
         <g class="grid y" ${ref(this.yGridRef)} transform="translate(${this.margin.left}, 0)" />
         <g class="axis x" ${ref(this.xRef)} transform="translate(0, ${height - this.margin.bottom})" />
         <g class="axis y" ${ref(this.yRef)} transform="translate(${this.margin.left}, 0)" />
         <path class="area" d="${this.area(this.plotData)}" />
         <path class="elevation" d="${this.line(this.plotData)}" fill="none" />
-        <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none" clip-path="url(#clip)"/>
-        <line
-          class="pointer-line y"
-          x1="${this.pointerPosition[0]}"
-          y1="${this.margin.top}"
-          x2="${this.pointerPosition[0]}"
-          y2="${height - this.margin.bottom}"
-        />
-        <circle class="pointer-circle" cx="${this.pointerPosition[0]}" cy="${this.pointerPosition[1]}" />
+        <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
+          <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none"
+            clip-path="polygon(0 0, ${this.pointer.x - 40} 0, ${this.pointer.x - 40} 100%, 0 100%)"
+          />
+          <line
+            class="pointer-line y"
+            x1="${this.pointer.x}"
+            y1="${this.margin.top}"
+            x2="${this.pointer.x}"
+            y2="${height - this.margin.bottom}"
+          />
+          <circle class="pointer-circle" cx="${this.pointer.x}" cy="${this.pointer.y}" />
+        </g>
         <rect
           width="${width}"
           height="${height}"
@@ -108,22 +103,34 @@ export class ElevationProfile extends LitElement {
   private pointerMove(event: PointerEvent) {
     const pointerDistance = this.scaleX.invert(pointer(event)[0]);
     const index = Math.min(this.bisectDistance(this.plotData, pointerDistance), this.plotData.length - 1);
+    // FIXME:
+    // var d0 = data[i - 1]
+    // var d1 = data[i];
+    // // work out which date value is closest to the mouse
+    // var d = mouseDate - d0[0] > d1[0] - mouseDate ? d1 : d0;
+
     const data = this.plotData[index];
 
-    this.pointerPosition = [this.scaleX(data[0]), this.scaleY(data[1])];
+    this.pointer = {
+      x: this.scaleX(data[0]),
+      y: this.scaleY(data[1]),
+    };
 
     this.dispatchEvent(
       new CustomEvent('over', {
         detail: {
           coordinate: this.lines[index],
-          position: this.pointerPosition
+          position: this.pointer
         }
       }),
     );
   }
 
   private pointerOut() {
-    this.pointerPosition = [0, 0];
+    this.pointer = {
+      x: 0,
+      y: 0,
+    };
     this.dispatchEvent(new CustomEvent('out'));
   }
 
