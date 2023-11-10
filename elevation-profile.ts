@@ -9,10 +9,13 @@ import {line, area} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select, pointer} from 'd3-selection';
 
+
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
   @property({type: Array}) lines = [];
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
+  @property({type: Object}) tickSize = {x: 100, y: 40};
+
   @state() pointer = {x: 0, y: 0};
   private resizeController = new ResizeController(this, {});
 
@@ -61,8 +64,8 @@ export class ElevationProfile extends LitElement {
     this.yGrid.tickSize(-width + this.margin.left + this.margin.right);
     this.xGrid.tickSize(height - this.margin.top - this.margin.bottom);
 
-    const xTicks = width / 100;
-    const yTicks = height / 20;
+    const xTicks = width / this.tickSize.x;
+    const yTicks = height / this.tickSize.y;
     this.xAxis.ticks(xTicks);
     this.xGrid.ticks(xTicks);
     this.yAxis.ticks(yTicks);
