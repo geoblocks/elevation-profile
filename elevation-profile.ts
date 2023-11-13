@@ -2,6 +2,7 @@ import {LitElement, svg} from 'lit';
 import {customElement, state, property} from 'lit/decorators.js';
 import {ResizeController} from '@lit-labs/observers/resize-controller.js';
 import {createRef, ref} from 'lit/directives/ref.js';
+import type {PropertyValues} from 'lit';
 
 import {extent, bisector} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
@@ -9,6 +10,7 @@ import {line, area} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select, pointer} from 'd3-selection';
 
+type PlotPoint = number[];
 
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
@@ -19,22 +21,22 @@ export class ElevationProfile extends LitElement {
   @state() pointer = {x: 0, y: 0};
   private resizeController = new ResizeController(this, {});
 
-  private plotData: number[][] = [];
+  private plotData: PlotPoint[] = [];
   private scaleX = scaleLinear();
   private scaleY = scaleLinear();
 
-  private bisectDistance = bisector((data) => data[0]).left;
+  private bisectDistance = bisector((point: PlotPoint) => point[0]);
 
   private line = line()
-    .x((point) => this.scaleX(point[0]))
-    .y((point) => this.scaleY(point[1]));
+    .x((point: PlotPoint) => this.scaleX(point[0]))
+    .y((point: PlotPoint) => this.scaleY(point[1]));
   private area = area()
-    .x((point) => this.scaleX(point[0]))
-    .y1((point) => this.scaleY(point[1]));
+    .x((point: PlotPoint) => this.scaleX(point[0]))
+    .y1((point: PlotPoint) => this.scaleY(point[1]));
   private xAxis = axisBottom(this.scaleX)
-    .tickFormat((i) => i + ' m');
+    .tickFormat((val: number) => val + ' m');
   private yAxis = axisLeft(this.scaleY)
-    .tickFormat((i) => i + ' m');
+    .tickFormat((val: number) => val + ' m');
     private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
     private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
@@ -43,16 +45,20 @@ export class ElevationProfile extends LitElement {
   private yGridRef = createRef();
   private xGridRef = createRef();
 
-  willUpdate(changedProperties) {
+  override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
       this.plotData = this.lines.map((coordinate) => [coordinate[3], coordinate[2]]);
 
-      this.scaleX.domain(extent(this.plotData, (data) => data[0]));
-      this.scaleY.domain(extent(this.plotData, (data) => data[1])).nice();
+      this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data[0]));
+      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data[1])).nice();
     }
   }
 
-  render() {
+  override shouldUpdate(): boolean {
+      return this.lines.length > 0;
+  }
+
+  override render() {
     const width = this.offsetWidth;
     const height = this.offsetHeight;
 
@@ -86,7 +92,7 @@ export class ElevationProfile extends LitElement {
         <path class="elevation" d="${this.line(this.plotData)}" fill="none" />
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
           <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none"
-            clip-path="polygon(0 0, ${this.pointer.x - 40} 0, ${this.pointer.x - 40} 100%, 0 100%)"
+            clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)"
           />
           <line
             class="pointer-line y"
@@ -109,9 +115,14 @@ export class ElevationProfile extends LitElement {
     `;
   }
 
+  override firstUpdated() {
+    // FIXME: because the ref element are used before render is done, we need to force an update
+    this.requestUpdate();
+  }
+
   private pointerMove(event: PointerEvent) {
     const pointerDistance = this.scaleX.invert(pointer(event)[0]);
-    const index = Math.min(this.bisectDistance(this.plotData, pointerDistance), this.plotData.length - 1);
+    const index = Math.min(this.bisectDistance.left(this.plotData, pointerDistance), this.plotData.length - 1);
     // FIXME:
     // var d0 = data[i - 1]
     // var d1 = data[i];
@@ -143,7 +154,7 @@ export class ElevationProfile extends LitElement {
     this.dispatchEvent(new CustomEvent('out'));
   }
 
-  createRenderRoot() {
+  override createRenderRoot() {
     return this;
   }
 }
