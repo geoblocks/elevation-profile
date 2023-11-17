@@ -1,7 +1,6 @@
 import {LitElement, svg} from 'lit';
 import {customElement, state, property} from 'lit/decorators.js';
 import {ResizeController} from '@lit-labs/observers/resize-controller.js';
-import {createRef, ref} from 'lit/directives/ref.js';
 import type {PropertyValues} from 'lit';
 
 import {extent, bisector} from 'd3-array';
@@ -48,11 +47,6 @@ export class ElevationProfile extends LitElement {
     unit: 'kilometer',
   });
 
-  private xRef = createRef();
-  private yRef = createRef();
-  private yGridRef = createRef();
-  private xGridRef = createRef();
-
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
       this.plotData = this.lines.map((coordinate) => [coordinate[3], coordinate[2]]);
@@ -85,17 +79,17 @@ export class ElevationProfile extends LitElement {
     this.yAxis.ticks(yTicks);
     this.yGrid.ticks(yTicks);
 
-    select(this.xRef.value).call(this.xAxis);
-    select(this.yRef.value).call(this.yAxis);
-    select(this.xGridRef.value).call(this.xGrid);
-    select(this.yGridRef.value).call(this.yGrid);
+    select(this.querySelector('.axis.x')).call(this.xAxis);
+    select(this.querySelector('.axis.y')).call(this.yAxis);
+    select(this.querySelector('.grid.x')).call(this.xGrid);
+    select(this.querySelector('.grid.y')).call(this.yGrid);
 
     return svg`
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-        <g class="grid y" ${ref(this.yGridRef)} transform="translate(${this.margin.left}, 0)" />
-        <g class="grid x" ${ref(this.xGridRef)} transform="translate(0, ${this.margin.bottom})" />
-        <g class="axis x" ${ref(this.xRef)} transform="translate(0, ${height - this.margin.bottom})" />
-        <g class="axis y" ${ref(this.yRef)} transform="translate(${this.margin.left}, 0)" />
+        <g class="grid y" transform="translate(${this.margin.left}, 0)" />
+        <g class="grid x" transform="translate(0, ${this.margin.bottom})" />
+        <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
+        <g class="axis y" transform="translate(${this.margin.left}, 0)" />
         <path class="area" d="${this.area(this.plotData)}" />
         <path class="elevation" d="${this.line(this.plotData)}" fill="none" />
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
@@ -116,6 +110,7 @@ export class ElevationProfile extends LitElement {
           height="${height}"
           fill="none"
           pointer-events="all"
+          style="touch-action: none;"
           @pointermove="${this.pointerMove}"
           @pointerout="${this.pointerOut}"
         />
