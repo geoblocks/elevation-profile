@@ -19,7 +19,7 @@ export class ElevationProfile extends LitElement {
   @property({type: Object}) tickSize = {x: 100, y: 40};
 
   @state() pointer = {x: 0, y: 0};
-  private resizeController = new ResizeController(this, {});
+  private _resizeController = new ResizeController(this, {});
 
   private plotData: PlotPoint[] = [];
   private scaleX = scaleLinear();
@@ -33,12 +33,20 @@ export class ElevationProfile extends LitElement {
   private area = area()
     .x((point: PlotPoint) => this.scaleX(point[0]))
     .y1((point: PlotPoint) => this.scaleY(point[1]));
-  private xAxis = axisBottom(this.scaleX)
-    .tickFormat((val: number) => val + ' m');
-  private yAxis = axisLeft(this.scaleY)
-    .tickFormat((val: number) => val + ' m');
-    private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
-    private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
+  private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value));
+  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.tickFormat(value));
+  private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
+  private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
+
+  private meterFormat = Intl.NumberFormat('de-CH', {
+    style: 'unit',
+    unit: 'meter',
+  });
+
+  private kilometerFormat = Intl.NumberFormat('de-CH', {
+    style: 'unit',
+    unit: 'kilometer',
+  });
 
   private xRef = createRef();
   private yRef = createRef();
@@ -54,9 +62,9 @@ export class ElevationProfile extends LitElement {
     }
   }
 
-  override shouldUpdate(): boolean {
-      return this.lines.length > 0;
-  }
+  // override shouldUpdate(): boolean {
+  //     return this.lines.length > 0;
+  // }
 
   override render() {
     const width = this.offsetWidth;
@@ -83,7 +91,7 @@ export class ElevationProfile extends LitElement {
     select(this.yGridRef.value).call(this.yGrid);
 
     return svg`
-      <svg width="${width}" height="${height}">
+      <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <g class="grid y" ${ref(this.yGridRef)} transform="translate(${this.margin.left}, 0)" />
         <g class="grid x" ${ref(this.xGridRef)} transform="translate(0, ${this.margin.bottom})" />
         <g class="axis x" ${ref(this.xRef)} transform="translate(0, ${height - this.margin.bottom})" />
@@ -115,6 +123,14 @@ export class ElevationProfile extends LitElement {
     `;
   }
 
+  private tickFormat(value: number) {
+    if (value < 1000) {
+      return this.meterFormat.format(value);
+    } else {
+      return this.kilometerFormat.format(value / 1000);
+    }
+  }
+
   override firstUpdated() {
     // FIXME: because the ref element are used before render is done, we need to force an update
     this.requestUpdate();
@@ -123,6 +139,10 @@ export class ElevationProfile extends LitElement {
   private pointerMove(event: PointerEvent) {
     const pointerDistance = this.scaleX.invert(pointer(event)[0]);
     const index = Math.min(this.bisectDistance.left(this.plotData, pointerDistance), this.plotData.length - 1);
+
+    if (index < 0) {
+      return;
+    }
     // FIXME:
     // var d0 = data[i - 1]
     // var d1 = data[i];
