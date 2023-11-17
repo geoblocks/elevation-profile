@@ -23,6 +23,7 @@
   },
   "scripts": {
     "start": "parcel index.html",
+    "prepack": "npm run build",
     "build": "rm -rf dist && parcel build",
     "build-demo": "parcel build --target demo index.html",
     "publish-demo": "rm -rf build && npm run build-demo && gh-pages -d build"
