@@ -110,7 +110,7 @@ export class ElevationProfile extends LitElement {
           height="${height}"
           fill="none"
           pointer-events="all"
-          style="touch-action: none;"
+          style="display: block; touch-action: none;"
           @pointermove="${this.pointerMove}"
           @pointerout="${this.pointerOut}"
         />
