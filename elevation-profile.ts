@@ -9,11 +9,15 @@ import {line, area} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select, pointer} from 'd3-selection';
 
-type PlotPoint = number[];
+type PlotPoint = {
+  x: number;
+  y: number;
+  coordinate: number[];
+};
 
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
-  @property({type: Array}) lines: number[][] = [];
+  @property({type: Array}) lines: number[][][] = [];
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
 
@@ -24,14 +28,16 @@ export class ElevationProfile extends LitElement {
   private scaleX = scaleLinear();
   private scaleY = scaleLinear();
 
-  private bisectDistance = bisector((point: PlotPoint) => point[0]);
+  private bisectDistance = bisector((point: PlotPoint) => point.x);
 
   private line = line()
-    .x((point: PlotPoint) => this.scaleX(point[0]))
-    .y((point: PlotPoint) => this.scaleY(point[1]));
+    .defined((point: PlotPoint) => !isNaN(point.y))
+    .x((point: PlotPoint) => this.scaleX(point.x))
+    .y((point: PlotPoint) => this.scaleY(point.y));
   private area = area()
-    .x((point: PlotPoint) => this.scaleX(point[0]))
-    .y1((point: PlotPoint) => this.scaleY(point[1]));
+    .defined((point: PlotPoint) => !isNaN(point.y))
+    .x((point: PlotPoint) => this.scaleX(point.x))
+    .y1((point: PlotPoint) => this.scaleY(point.y));
   private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value));
   private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.tickFormat(value));
   private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
@@ -49,16 +55,17 @@ export class ElevationProfile extends LitElement {
 
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
-      this.plotData = this.lines.map((coordinate) => [coordinate[3], coordinate[2]]);
+      console.log('lines changed', this.lines);
+      this.plotData.length = 0;
+      for (const line of this.lines) {
+        this.plotData.push(...line.map((coordinate) => ({x: coordinate[3], y: coordinate[2], coordinate})));
+        this.plotData.push({x: line[line.length - 1][3], y: NaN, coordinate: []});
+      }
 
-      this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data[0]));
-      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data[1])).nice();
+      this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
+      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y)).nice();
     }
   }
-
-  // override shouldUpdate(): boolean {
-  //     return this.lines.length > 0;
-  // }
 
   override render() {
     const width = this.offsetWidth;
@@ -139,22 +146,26 @@ export class ElevationProfile extends LitElement {
       return;
     }
     // FIXME:
-    // var d0 = data[i - 1]
-    // var d1 = data[i];
+    // var d0 = this.plotData[index - 1]
+    // var d1 = this.plotData[index];
     // // work out which date value is closest to the mouse
     // var d = mouseDate - d0[0] > d1[0] - mouseDate ? d1 : d0;
 
     const data = this.plotData[index];
 
+    if (isNaN(data.y)) {
+      return;
+    }
+
     this.pointer = {
-      x: this.scaleX(data[0]),
-      y: this.scaleY(data[1]),
+      x: this.scaleX(data.x),
+      y: this.scaleY(data.y),
     };
 
     this.dispatchEvent(
       new CustomEvent('over', {
         detail: {
-          coordinate: this.lines[index],
+          coordinate: this.plotData[index].coordinate,
           position: this.pointer
         }
       }),
