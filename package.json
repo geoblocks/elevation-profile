@@ -35,14 +35,14 @@
     "d3-scale": "4.0.2",
     "d3-selection": "3.0.0",
     "d3-shape": "3.2.0",
-    "lit": "3.0.2"
+    "lit": "3.1.0"
   },
   "devDependencies": {
-    "@parcel/packager-ts": "2.10.2",
-    "@parcel/transformer-typescript-tsc": "2.10.2",
-    "@parcel/transformer-typescript-types": "2.10.2",
-    "gh-pages": "6.0.0",
-    "parcel": "2.10.2",
-    "typescript": "5.2.2"
+    "@parcel/packager-ts": "2.10.3",
+    "@parcel/transformer-typescript-tsc": "2.10.3",
+    "@parcel/transformer-typescript-types": "2.10.3",
+    "gh-pages": "6.1.0",
+    "parcel": "2.10.3",
+    "typescript": "5.3.2"
   }
 }
