@@ -55,7 +55,6 @@ export class ElevationProfile extends LitElement {
 
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
-      console.log('lines changed', this.lines);
       this.plotData.length = 0;
       for (const line of this.lines) {
         this.plotData.push(...line.map((coordinate) => ({x: coordinate[3], y: coordinate[2], coordinate})));
@@ -110,7 +109,8 @@ export class ElevationProfile extends LitElement {
             x2="${this.pointer.x}"
             y2="${height - this.margin.bottom}"
           />
-          <circle class="pointer-circle" cx="${this.pointer.x}" cy="${this.pointer.y}" />
+          <circle class="pointer-circle-outline" cx="${this.pointer.x}" cy="${this.pointer.y}" r="16"/>
+          <circle class="pointer-circle" cx="${this.pointer.x}" cy="${this.pointer.y}" r="6"/>
         </g>
         <rect
           width="${width}"
