@@ -39,7 +39,7 @@ export class ElevationProfile extends LitElement {
     .x((point: PlotPoint) => this.scaleX(point.x))
     .y1((point: PlotPoint) => this.scaleY(point.y));
   private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value));
-  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.tickFormat(value));
+  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.meterFormat.format(value));
   private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
   private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
