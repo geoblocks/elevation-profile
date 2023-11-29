@@ -53,6 +53,8 @@ export class ElevationProfile extends LitElement {
     unit: 'kilometer',
   });
 
+  public updateScale(x: scaleLinear, y: scaleLinear, width: number, height: number): void {}
+
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
       this.plotData.length = 0;
@@ -63,6 +65,8 @@ export class ElevationProfile extends LitElement {
 
       this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
       this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y)).nice();
+
+      this.updateScale(this.scaleX, this.scaleY, this.offsetWidth, this.offsetHeight);
     }
   }
 

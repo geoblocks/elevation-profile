@@ -96,6 +96,74 @@
       const resetLines = document.querySelector("#reset-lines");
       const save = document.querySelector("#save");
 
+      profile.updateScale = (x, y, width, height) => {
+        // Flattened array of [xMax,ratioYOverX].
+        const ratiosXY = [0, 0.5, 0.33, 0.2, 0.1, 0.05];
+        const ratiosMinDist = [0, 2000, 5000, 20000, 100000, Infinity];
+        console.assert(ratiosXY.length === ratiosMinDist.length);
+
+        let i;
+
+        const xDomain = x.domain();
+
+        let yDomain = y.domain();
+
+        // Add padding to Y domain
+        const padding = (yDomain[1] - yDomain[0]) * 0.1;
+        y.domain([yDomain[0] - padding, yDomain[1] + padding]);
+        yDomain = y.domain();
+
+        const xMin = xDomain[0];
+        const xMax = xDomain[1];
+        const yMin = yDomain[0];
+        let yMax = yDomain[1];
+
+        // Search for the best XY ratio
+        let yDomainLength = 0;
+        i = 0;
+        let reverse = false;
+        // The algorithm is:
+        // - advance to reach the expected ratio;
+        // - if the computed ydomain would not be large enough, reverse direction;
+        // - go backwards until a good ydomain is found;
+        // - if none is found keep the ydomain values from d3.
+        while (true) {
+          if (!reverse && xMax > ratiosMinDist[i]) {
+            // advance in the ratio table
+            ++i;
+            continue;
+          }
+
+          const ratioYOverX = ratiosXY[i];
+          const xResolution = (xMax - xMin) / width;
+          yDomainLength = ratioYOverX * xResolution * height;
+
+          if (i > 0 && yDomainLength < yMax - yMin) {
+            // not enough space with this ratio to show all the
+            // y values. Go back to try another ratio.
+            reverse = true;
+            --i;
+            continue;
+          }
+
+          break;
+        }
+
+        // Apply XY ratio
+        if (yDomainLength) {
+          const yMean = (yMax + yMin) / 2;
+          const yHalfDomain = yDomainLength / 2;
+          y.domain([yMean - yHalfDomain, yMean + yHalfDomain]);
+        }
+
+        // Lower bound for y-axis
+        if (y.domain()[0] < 0) {
+          const shift = 0 - y.domain()[0];
+          // For yLowerBound=0 and y0=-50, y is shifted 50m up
+          y.domain([0, y.domain()[1] + shift]);
+        }
+      };
+
       save.addEventListener("click", () => {
         const svg = profile.innerHTML;
         const blob = new Blob([svg], { type: "image/svg+xml" });
