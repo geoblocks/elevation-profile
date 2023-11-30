@@ -43,12 +43,12 @@ export class ElevationProfile extends LitElement {
   private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
   private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
-  private meterFormat = Intl.NumberFormat('de-CH', {
+  private meterFormat = Intl.NumberFormat(undefined, {
     style: 'unit',
     unit: 'meter',
   });
 
-  private kilometerFormat = Intl.NumberFormat('de-CH', {
+  private kilometerFormat = Intl.NumberFormat(undefined, {
     style: 'unit',
     unit: 'kilometer',
   });
