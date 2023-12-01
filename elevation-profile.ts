@@ -20,6 +20,7 @@ type PlotPoint = {
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
   @property({type: Number}) tolerance = 1;
+  @property({type: String}) locale = navigator.language;
   @property({type: Array}) lines: number[][][] = [];
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
@@ -42,21 +43,28 @@ export class ElevationProfile extends LitElement {
     .x((point: PlotPoint) => this.scaleX(point.x))
     .y1((point: PlotPoint) => this.scaleY(point.y));
   private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value));
-  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.meterFormat.format(value));
+  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.meterFormat!.format(value));
   private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
   private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
-  private meterFormat = Intl.NumberFormat(undefined, {
-    style: 'unit',
-    unit: 'meter',
-  });
-
-  private kilometerFormat = Intl.NumberFormat(undefined, {
-    style: 'unit',
-    unit: 'kilometer',
-  });
+  private meterFormat: Intl.NumberFormat | null = null;
+  private kilometerFormat: Intl.NumberFormat | null = null;
 
   public updateScale(x: scaleLinear, y: scaleLinear, width: number, height: number): void {}
+
+  override updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('locale')) {
+      this.meterFormat = new Intl.NumberFormat(this.locale, {
+        style: 'unit',
+        unit: 'meter',
+      });
+
+      this.kilometerFormat = new Intl.NumberFormat(this.locale, {
+        style: 'unit',
+        unit: 'kilometer',
+      });
+    }
+  }
 
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
@@ -135,9 +143,9 @@ export class ElevationProfile extends LitElement {
 
   private tickFormat(value: number) {
     if (value < 1000) {
-      return this.meterFormat.format(value);
+      return this.meterFormat!.format(value);
     } else {
-      return this.kilometerFormat.format(value / 1000);
+      return this.kilometerFormat!.format(value / 1000);
     }
   }
 
