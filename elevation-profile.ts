@@ -27,6 +27,7 @@ export default class ElevationProfile extends LitElement {
   @property({type: Number}) tolerance = 1;
   @property({type: String}) locale = navigator.language;
   @property({type: Array}) lines: number[][][] = [];
+  @property() updateScale = (x: scaleLinear, y: scaleLinear, width: number, height: number): void => {};
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
 
@@ -54,8 +55,6 @@ export default class ElevationProfile extends LitElement {
 
   private meterFormat: Intl.NumberFormat | null = null;
   private kilometerFormat: Intl.NumberFormat | null = null;
-
-  public updateScale(x: scaleLinear, y: scaleLinear, width: number, height: number): void {}
 
   override updated(changedProperties: PropertyValues) {
     if (changedProperties.has('locale')) {
