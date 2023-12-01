@@ -9,6 +9,8 @@ import {line, area} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select, pointer} from 'd3-selection';
 
+import simplify from 'simplify-js';
+
 type PlotPoint = {
   x: number;
   y: number;
@@ -17,6 +19,7 @@ type PlotPoint = {
 
 @customElement('elevation-profile')
 export class ElevationProfile extends LitElement {
+  @property({type: Number}) tolerance = 1;
   @property({type: Array}) lines: number[][][] = [];
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
@@ -59,7 +62,8 @@ export class ElevationProfile extends LitElement {
     if (changedProperties.has('lines')) {
       this.plotData.length = 0;
       for (const line of this.lines) {
-        this.plotData.push(...line.map((coordinate) => ({x: coordinate[3], y: coordinate[2], coordinate})));
+        const data = line.map((coordinate) => ({x: coordinate[3], y: coordinate[2], coordinate}));
+        this.plotData.push(...simplify(data, this.tolerance));
         this.plotData.push({x: line[line.length - 1][3], y: NaN, coordinate: []});
       }
 
