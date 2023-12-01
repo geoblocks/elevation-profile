@@ -17,8 +17,13 @@ type PlotPoint = {
   coordinate: number[];
 };
 
+export type OverDetails = {
+  coordinate: number[];
+  position: {x: number; y: number};
+};
+
 @customElement('elevation-profile')
-export class ElevationProfile extends LitElement {
+export default class ElevationProfile extends LitElement {
   @property({type: Number}) tolerance = 1;
   @property({type: String}) locale = navigator.language;
   @property({type: Array}) lines: number[][][] = [];
@@ -179,7 +184,7 @@ export class ElevationProfile extends LitElement {
     };
 
     this.dispatchEvent(
-      new CustomEvent('over', {
+      new CustomEvent<OverDetails>('over', {
         detail: {
           coordinate: this.plotData[index].coordinate,
           position: this.pointer
