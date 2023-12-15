@@ -44,6 +44,6 @@
     "@parcel/transformer-typescript-types": "2.10.3",
     "gh-pages": "6.1.0",
     "parcel": "2.10.3",
-    "typescript": "5.3.2"
+    "typescript": "5.3.3"
   }
 }
