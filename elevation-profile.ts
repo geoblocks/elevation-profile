@@ -30,6 +30,7 @@ export default class ElevationProfile extends LitElement {
   @property() updateScale = (x: scaleLinear, y: scaleLinear, width: number, height: number): void => {};
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
+  @property({type: Boolean}) pointerEvents = true;
 
   @state() pointer = {x: 0, y: 0};
   private _resizeController = new ResizeController(this, {});
@@ -136,7 +137,7 @@ export default class ElevationProfile extends LitElement {
           width="${width}"
           height="${height}"
           fill="none"
-          pointer-events="all"
+          pointer-events="${this.pointerEvents ? 'all' : 'none'}"
           style="display: block; touch-action: none;"
           @pointermove="${this.pointerMove}"
           @pointerout="${this.pointerOut}"
