@@ -21,11 +21,14 @@ npm i --save @geoblocks/elevation-profile
 | Name            | Type             | Default                                      | Description
 | --------------- | ---------------- | -------------------------------------------- | -----------
 | `lines`         | `number[][][]`   |                                              | MultiLineString coordinates
+| `points`        | `number[][]`     |                                              | Points to be displayed on the profile
 | `margin`        | `Object`         | `{top: 20, right: 20, bottom: 20, left: 40}` | Margin in pixels around the elevation profile
 | `pointerEvents` | `Boolean`        | `true`                                       | Whether to emit pointer events
 | `tickSize`      | `Object`         | `{x: 100, y: 40}`                            | Size of the ticks in pixels
 | `locale`        | `string`         | `navigator.language`                         | Locale for the axis labels
 | `tolerance`     | `number`         | `1`                                          | Tolerance for the line simplification. Set to `0` to disable simplification
+
+### Ticks formating
 
 The value of the tick in the axis can be changed by overriding the `tickFormat` method.
 ```javascript
@@ -35,6 +38,16 @@ profile.tickFormat = (value, axis) => {
 ```
 Where `value` is the value of the tick and `axis` is the axis where the tick is located (`x` or `y`).
 
+### Adding points
+
+Points can be added to the profile by setting the `points` property. By default, the points will be displayed as circles on the profile.
+This can be changed by overriding the `pointSvg` method.
+```javascript
+profile.pointSvg = (x, y, index) => {
+  return `<circle cx="${x}" cy="${y}" r="5" fill="red" />`;
+};
+```
+Where `x` and `y` are the position in pixels and `index` is the index of the point in the `points` array.
 
 ### Events
 
