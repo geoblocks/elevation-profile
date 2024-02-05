@@ -1,7 +1,7 @@
 import {LitElement, svg} from 'lit';
 import {customElement, state, property} from 'lit/decorators.js';
 import {ResizeController} from '@lit-labs/observers/resize-controller.js';
-import type {PropertyValues} from 'lit';
+import type {PropertyValues, TemplateResult} from 'lit';
 
 import {extent, bisector} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
@@ -27,6 +27,7 @@ export default class ElevationProfile extends LitElement {
   @property({type: Number}) tolerance = 1;
   @property({type: String}) locale = navigator.language;
   @property({type: Array}) lines: number[][][] = [];
+  @property({type: Array}) points: number[][] = [];
   @property() updateScale = (x: scaleLinear, y: scaleLinear, width: number, height: number): void => {};
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
   @property({type: Object}) tickSize = {x: 100, y: 40};
@@ -36,6 +37,7 @@ export default class ElevationProfile extends LitElement {
   private _resizeController = new ResizeController(this, {});
 
   private plotData: PlotPoint[] = [];
+  private pointsData: PlotPoint[] = [];
   private scaleX = scaleLinear();
   private scaleY = scaleLinear();
 
@@ -85,6 +87,12 @@ export default class ElevationProfile extends LitElement {
 
       this.updateScale(this.scaleX, this.scaleY, this.offsetWidth, this.offsetHeight);
     }
+    if (changedProperties.has('points')) {
+      this.pointsData.length = 0;
+      for (const point of this.points) {
+        this.pointsData.push({x: point[3], y: point[2], coordinate: point});
+      }
+    }
   }
 
   override render() {
@@ -118,13 +126,15 @@ export default class ElevationProfile extends LitElement {
         <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
         <g class="axis y" transform="translate(${this.margin.left}, 0)" />
         <path class="area" d="${this.area(this.plotData)}" />
+
         <path class="elevation" d="${this.line(this.plotData)}" fill="none" />
+
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
           <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none"
             clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)"
           />
           <line
-            class="pointer-line y"
+            class="pointer-line"
             x1="${this.pointer.x}"
             y1="${this.margin.top}"
             x2="${this.pointer.x}"
@@ -133,6 +143,9 @@ export default class ElevationProfile extends LitElement {
           <circle class="pointer-circle-outline" cx="${this.pointer.x}" cy="${this.pointer.y}" r="16"/>
           <circle class="pointer-circle" cx="${this.pointer.x}" cy="${this.pointer.y}" r="6"/>
         </g>
+
+        ${this.pointsData.map((point, index) => this.pointSvg(this.scaleX(point.x), this.scaleY(point.y), index))}
+
         <rect
           width="${width}"
           height="${height}"
@@ -152,6 +165,10 @@ export default class ElevationProfile extends LitElement {
     } else {
       return this.kilometerFormat!.format(value / 1000);
     }
+  }
+
+  public pointSvg(x: number, y: number, index: number): TemplateResult {
+    return svg`<circle class="point" cx="${x}" cy="${y}" r="10"/>`;
   }
 
   override firstUpdated() {
