@@ -49,8 +49,8 @@ export default class ElevationProfile extends LitElement {
     .defined((point: PlotPoint) => !isNaN(point.y))
     .x((point: PlotPoint) => this.scaleX(point.x))
     .y1((point: PlotPoint) => this.scaleY(point.y));
-  private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value));
-  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.meterFormat!.format(value));
+  private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value, 'x'));
+  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.tickFormat(value, 'y'));
   private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
   private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
@@ -146,8 +146,8 @@ export default class ElevationProfile extends LitElement {
     `;
   }
 
-  private tickFormat(value: number) {
-    if (value < 1000) {
+  public tickFormat(value: number, axis: 'x' | 'y') {
+    if (axis === 'y' || value < 1000) {
       return this.meterFormat!.format(value);
     } else {
       return this.kilometerFormat!.format(value / 1000);

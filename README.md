@@ -27,6 +27,15 @@ npm i --save @geoblocks/elevation-profile
 | `locale`        | `string`         | `navigator.language`                         | Locale for the axis labels
 | `tolerance`     | `number`         | `1`                                          | Tolerance for the line simplification. Set to `0` to disable simplification
 
+The value of the tick in the axis can be changed by overriding the `tickFormat` method.
+```javascript
+profile.tickFormat = (value, axis) => {
+  return Math.round(value);
+};
+```
+Where `value` is the value of the tick and `axis` is the axis where the tick is located (`x` or `y`).
+
+
 ### Events
 
 If `pointerEvents` is `true`, the component will emit the following custom events on pointer interaction:
