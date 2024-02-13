@@ -34,7 +34,9 @@ export default class ElevationProfile extends LitElement {
   @property({type: Boolean}) pointerEvents = true;
 
   @state() pointer = {x: 0, y: 0};
-  private _resizeController = new ResizeController(this, {});
+  private resizeController = new ResizeController(this, {
+    callback: () => [this.offsetWidth, this.offsetHeight],
+  });
 
   private plotData: PlotPoint[] = [];
   private pointsData: PlotPoint[] = [];
@@ -96,8 +98,7 @@ export default class ElevationProfile extends LitElement {
   }
 
   override render() {
-    const width = this.offsetWidth;
-    const height = this.offsetHeight;
+    const [width, height] = this.resizeController.value ?? [0, 0];
 
     this.scaleX.range([this.margin.left, width - this.margin.right]);
     this.scaleY.range([height - this.margin.bottom, this.margin.top]);
