@@ -1,5 +1,6 @@
 import {LitElement, svg} from 'lit';
 import {customElement, state, property} from 'lit/decorators.js';
+import {guard} from 'lit/directives/guard.js';
 import {ResizeController} from '@lit-labs/observers/resize-controller.js';
 import type {PropertyValues, TemplateResult} from 'lit';
 
@@ -24,7 +25,7 @@ export type OverDetails = {
 
 @customElement('elevation-profile')
 export default class ElevationProfile extends LitElement {
-  @property({type: Number}) tolerance = 1;
+  @property({type: Number}) tolerance = 0;
   @property({type: String}) locale = navigator.language;
   @property({type: Array}) lines: number[][][] = [];
   @property({type: Array}) points: number[][] = [];
@@ -125,14 +126,17 @@ export default class ElevationProfile extends LitElement {
         <g class="grid x" transform="translate(0, ${this.margin.bottom})" />
         <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
         <g class="axis y" transform="translate(${this.margin.left}, 0)" />
-        <path class="area" d="${this.area(this.plotData)}" />
-
-        <path class="elevation" d="${this.line(this.plotData)}" fill="none" />
-
+        ${guard([this.lines, width, height], () => svg`
+          <path class="area" d="${this.area(this.plotData)}" />
+          <path class="elevation" d="${this.line(this.plotData)}" fill="none" />`
+        )}
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
-          <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none"
-            clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)"
-          />
+          <!-- FIXME: not updated because this.pointer and this.margin not in guard -->
+          ${guard([this.lines, width, height], () => svg`
+            <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none"
+              clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)"
+            />`
+          )}
           <line
             class="pointer-line"
             x1="${this.pointer.x}"
