@@ -1,6 +1,7 @@
 import {LitElement, svg} from 'lit';
 import {customElement, state, property} from 'lit/decorators.js';
 import {ResizeController} from '@lit-labs/observers/resize-controller.js';
+import {guard} from 'lit/directives/guard.js';
 import type {PropertyValues, TemplateResult} from 'lit';
 
 import {extent, bisector} from 'd3-array';
@@ -34,7 +35,9 @@ export default class ElevationProfile extends LitElement {
   @property({type: Boolean}) pointerEvents = true;
 
   @state() pointer = {x: 0, y: 0};
-  private _resizeController = new ResizeController(this, {});
+  private resizeController = new ResizeController(this, {
+    callback: () => [this.offsetWidth, this.offsetHeight],
+  });
 
   private plotData: PlotPoint[] = [];
   private pointsData: PlotPoint[] = [];
@@ -96,8 +99,7 @@ export default class ElevationProfile extends LitElement {
   }
 
   override render() {
-    const width = this.offsetWidth;
-    const height = this.offsetHeight;
+    const [width, height] = this.resizeController.value ?? [0, 0];
 
     this.scaleX.range([this.margin.left, width - this.margin.right]);
     this.scaleY.range([height - this.margin.bottom, this.margin.top]);
@@ -125,14 +127,16 @@ export default class ElevationProfile extends LitElement {
         <g class="grid x" transform="translate(0, ${this.margin.bottom})" />
         <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
         <g class="axis y" transform="translate(${this.margin.left}, 0)" />
-        <path class="area" d="${this.area(this.plotData)}" />
 
-        <path class="elevation" d="${this.line(this.plotData)}" fill="none" />
+        ${guard([this.lines, width, height], () => svg`
+          <path class="area" d="${this.area(this.plotData)}" />
+          <path class="elevation" d="${this.line(this.plotData)}" fill="none" />`
+        )}
 
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
-          <path class="elevation highlight" d="${this.line(this.plotData)}" fill="none"
-            clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)"
-          />
+          <g clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)">
+            ${guard([this.lines, width, height], () => svg`<path class="elevation highlight" d="${this.line(this.plotData)}" fill="none" />`)}
+          </g>
           <line
             class="pointer-line"
             x1="${this.pointer.x}"
