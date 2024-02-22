@@ -121,6 +121,9 @@ export default class ElevationProfile extends LitElement {
     select(this.querySelector('.grid.x')).call(this.xGrid);
     select(this.querySelector('.grid.y')).call(this.yGrid);
 
+
+    const firstYTick = this.scaleY.ticks(yTicks)[0];
+    const firstCoordinate = this.plotData[0]
     return svg`
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <g class="grid y" transform="translate(${this.margin.left}, 0)" />
@@ -159,6 +162,11 @@ export default class ElevationProfile extends LitElement {
           @pointermove="${this.pointerMove}"
           @pointerout="${this.pointerOut}"
         />
+        <g 
+          transform="translate(${this.margin.left},${height - this.margin.bottom})" 
+          style="visibility: ${firstCoordinate && firstYTick >= firstCoordinate.y ? 'visible' : 'hidden'}">
+          <line stroke="black" x2="${width - this.margin.left - this.margin.right}"></line>
+        </g>
       </svg>
     `;
   }
