@@ -90,6 +90,7 @@
       <elevation-profile locale="de-CH"></elevation-profile>
     </div>
     <button id="set-lines">set lines</button>
+    <button id="set-line">set line</button>
     <button id="reset-lines">reset lines</button>
     <button id="save">save</button>
 
@@ -100,6 +101,7 @@
       const tooltip = document.querySelector("#tooltip");
       const logs = document.querySelector("#logs");
       const setLines = document.querySelector("#set-lines");
+      const setLine = document.querySelector("#set-line");
       const resetLines = document.querySelector("#reset-lines");
       const save = document.querySelector("#save");
 
@@ -112,6 +114,44 @@
         a.href = url;
         a.download = "elevation.svg";
         a.click();
+      });
+
+      setLine.addEventListener("click", () => {
+        profile.lines = [
+          [
+            [
+              2752448.6890149354,
+              1212435.0280630554,
+              481.6,
+              0
+            ],
+            [
+              2750063.3798349514,
+              1212552.370432813,
+              572.9,
+              500
+            ],
+            [
+              2749668.7007208047,
+              1212135.4200102754,
+              656.9,
+              1000
+            ],
+            [
+              2748077.860283412,
+              1211515.1656088883,
+              1012.8,
+              1500
+            ],
+            [
+              2744845.780407053,
+              1205982.2556253774,
+              1003.2,
+              2000
+            ]
+          ]
+        ];
+        profile.points = [];
       });
 
       setLines.addEventListener("click", () => {
