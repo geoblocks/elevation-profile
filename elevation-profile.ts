@@ -62,6 +62,8 @@ export default class ElevationProfile extends LitElement {
   private meterFormat: Intl.NumberFormat | null = null;
   private kilometerFormat: Intl.NumberFormat | null = null;
 
+  private lowestY: number | undefined;
+
   override updated(changedProperties: PropertyValues) {
     if (changedProperties.has('locale')) {
       this.meterFormat = new Intl.NumberFormat(this.locale, {
@@ -84,6 +86,8 @@ export default class ElevationProfile extends LitElement {
         this.plotData.push(...simplify(data, this.tolerance));
         this.plotData.push({x: line[line.length - 1][3], y: NaN, coordinate: []});
       }
+      this.lowestY = this.plotData.length && this.plotData
+          .reduce((a, b) => !isNaN(b.y) ? Math.min(a, b.y) : a, this.plotData[0].y);
 
       this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
       this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y)).nice();
@@ -123,7 +127,7 @@ export default class ElevationProfile extends LitElement {
 
 
     const firstYTick = this.scaleY.ticks(yTicks)[0];
-    const firstCoordinate = this.plotData[0]
+
     return svg`
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <g class="grid y" transform="translate(${this.margin.left}, 0)" />
@@ -163,9 +167,10 @@ export default class ElevationProfile extends LitElement {
           @pointerout="${this.pointerOut}"
         />
         <g 
-          transform="translate(${this.margin.left},${height - this.margin.bottom})" 
-          style="visibility: ${firstCoordinate && firstYTick >= firstCoordinate.y ? 'visible' : 'hidden'}">
-          <line stroke="black" x2="${width - this.margin.left - this.margin.right}"></line>
+          transform="translate(${this.margin.left},${height - this.margin.bottom})"
+          class="axis"
+          style="visibility: ${this.lowestY && firstYTick >= this.lowestY ? 'visible' : 'hidden'}">
+          <line x2="${width - this.margin.left - this.margin.right}"></line>
         </g>
       </svg>
     `;
