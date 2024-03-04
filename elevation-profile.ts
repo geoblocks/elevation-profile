@@ -86,7 +86,7 @@ export default class ElevationProfile extends LitElement {
       }
 
       this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
-      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y)).nice();
+      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y));
 
       this.updateScale(this.scaleX, this.scaleY, this.offsetWidth, this.offsetHeight);
     }
@@ -177,6 +177,13 @@ export default class ElevationProfile extends LitElement {
     } else {
       return this.kilometerFormat!.format(value / 1000);
     }
+  }
+
+  public tickValues(values: number[], axis: 'x' | 'y') {
+    if (values.length === 0 || (axis !== 'x' && axis !== 'y')) {
+      return;
+    } 
+    axis === 'x' ? this.xAxis.tickValues(values) : this.yAxis.tickValues(values);
   }
 
   public pointSvg(x: number, y: number, index: number): TemplateResult {

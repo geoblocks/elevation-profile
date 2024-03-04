@@ -38,6 +38,14 @@ profile.tickFormat = (value, axis) => {
 ```
 Where `value` is the value of the tick and `axis` is the axis where the tick is located (`x` or `y`).
 
+### Tick values
+
+Ticks can be set manually using the `tickValues` method, passing an array of values and the desired axis (`x` of `y`).
+If values is null or the axis is not specified, ticks will be generated automatically.
+```javascript
+profile.tickValues([100, 150, 200, 250], 'y');
+```
+
 ### Adding points
 
 Points can be added to the profile by setting the `points` property. By default, the points will be displayed as circles on the profile.
