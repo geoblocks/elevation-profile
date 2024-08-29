@@ -20,7 +20,7 @@ npm i --save @geoblocks/elevation-profile
 
 | Name            | Type             | Default                                      | Description
 | --------------- | ---------------- | -------------------------------------------- | -----------
-| `lines`         | `number[][][]`   |                                              | MultiLineString coordinates
+| `lines`         | `number[][][]`   |                                              | **required** MultiLineString coordinates
 | `points`        | `number[][]`     |                                              | Points to be displayed on the profile
 | `margin`        | `Object`         | `{top: 20, right: 20, bottom: 20, left: 40}` | Margin in pixels around the elevation profile
 | `pointerEvents` | `Boolean`        | `true`                                       | Whether to emit pointer events
@@ -31,17 +31,20 @@ npm i --save @geoblocks/elevation-profile
 ### Ticks formating
 
 The value of the tick in the axis can be changed by overriding the `tickFormat` method.
+
 ```javascript
 profile.tickFormat = (value, axis) => {
   return Math.round(value);
 };
 ```
+
 Where `value` is the value of the tick and `axis` is the axis where the tick is located (`x` or `y`).
 
 ### Tick values
 
 Ticks can be set manually using the `tickValues` method, passing an array of values and the desired axis (`x` of `y`).
 If values is null or the axis is not specified, ticks will be generated automatically.
+
 ```javascript
 profile.tickValues([100, 150, 200, 250], 'y');
 ```
@@ -50,11 +53,13 @@ profile.tickValues([100, 150, 200, 250], 'y');
 
 Points can be added to the profile by setting the `points` property. By default, the points will be displayed as circles on the profile.
 This can be changed by overriding the `pointSvg` method.
+
 ```javascript
 profile.pointSvg = (x, y, index) => {
   return `<circle cx="${x}" cy="${y}" r="5" fill="red" />`;
 };
 ```
+
 Where `x` and `y` are the position in pixels and `index` is the index of the point in the `points` array.
 
 ### Events
