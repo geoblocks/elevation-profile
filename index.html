@@ -40,8 +40,12 @@
         display: none;
       }
 
-      elevation-profile .axis line, .grid line {
-        stroke: #707070;
+      elevation-profile .axis line{
+        stroke: rgba(45, 45, 45, 1.0);
+      }
+
+      elevation-profile .grid line {
+        stroke: rgba(45, 45, 45, 0.25);
       }
 
       elevation-profile .pointer-line {
@@ -89,10 +93,9 @@
 
       <elevation-profile locale="de-CH"></elevation-profile>
     </div>
-    <button id="set-lines">set lines</button>
-    <button id="set-line">set line</button>
-    <button id="reset-lines">reset lines</button>
-    <button id="save">save</button>
+    <button id="set-lines">multi linestring</button>
+    <button id="set-line">linestring</button>
+    <button id="save">save as png</button>
 
     <pre id="logs"></pre>
 
@@ -102,7 +105,6 @@
       const logs = document.querySelector("#logs");
       const setLines = document.querySelector("#set-lines");
       const setLine = document.querySelector("#set-line");
-      const resetLines = document.querySelector("#reset-lines");
       const save = document.querySelector("#save");
 
       save.addEventListener("click", () => {
@@ -183,10 +185,6 @@
         ];
       });
 
-      resetLines.addEventListener("click", () => {
-        profile.lines = [];
-      });
-
       profile.addEventListener("over", (event) => {
         logs.textContent = JSON.stringify(event.detail, null, 2);
         tooltip.style.display = "block";
@@ -198,6 +196,9 @@
         logs.textContent = "";
         tooltip.style.display = "none";
       });
+
+      setLines.click();
+
     </script>
   </body>
 </html>
