@@ -140,11 +140,18 @@ export default class ElevationProfile extends LitElement {
             ${guard([this.lines, width, height], () => svg`<path class="elevation highlight" d="${this.line(this.plotData)}" fill="none" />`)}
           </g>
           <line
-            class="pointer-line"
+            class="pointer-line x"
             x1="${this.pointer.x}"
             y1="${this.margin.top}"
             x2="${this.pointer.x}"
             y2="${height - this.margin.bottom}"
+          />
+          <line
+            class="pointer-line y"
+            x1="${this.margin.left}"
+            y1="${this.pointer.y}"
+            x2="${width - this.margin.right}"
+            y2="${this.pointer.y}"
           />
           <circle class="pointer-circle-outline" cx="${this.pointer.x}" cy="${this.pointer.y}" r="16"/>
           <circle class="pointer-circle" cx="${this.pointer.x}" cy="${this.pointer.y}" r="6"/>
@@ -161,7 +168,7 @@ export default class ElevationProfile extends LitElement {
           @pointermove="${this.pointerMove}"
           @pointerout="${this.pointerOut}"
         />
-        <g 
+        <g
           transform="translate(${this.margin.left},${height - this.margin.bottom + offset})"
           class="axis"
           style="visibility: ${this.lines.length ? 'visible' : 'hidden'}">
@@ -182,7 +189,7 @@ export default class ElevationProfile extends LitElement {
   public tickValues(values: number[], axis: 'x' | 'y') {
     if (values.length === 0 || (axis !== 'x' && axis !== 'y')) {
       return;
-    } 
+    }
     axis === 'x' ? this.xAxis.tickValues(values) : this.yAxis.tickValues(values);
   }
 
