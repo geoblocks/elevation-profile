@@ -25,7 +25,7 @@ npm i --save @geoblocks/elevation-profile
 | `margin`        | `Object`         | `{top: 20, right: 20, bottom: 20, left: 40}` | Margin in pixels around the elevation profile
 | `pointerEvents` | `Boolean`        | `true`                                       | Whether to emit pointer events
 | `tickSize`      | `Object`         | `{x: 100, y: 40}`                            | Size of the ticks in pixels
-| `locale`        | `string`         | `navigator.language`                         | Locale for the axis labels
+| `locale`        | `string`         | `navigator.language`                         | Locale for the axis numbers formatting
 | `tolerance`     | `number`         | `1`                                          | Tolerance for the line simplification. Set to `0` to disable simplification
 
 ### Ticks formating
@@ -73,4 +73,15 @@ If `pointerEvents` is `true`, the component will emit the following custom event
 
 ### Styling
 
-TODO: describe CSS selectors
+FIXME: TBD
+
+| CSS class                 | Description
+| ------------------------- | -----------
+| `.elevation`              | The elevation line
+| `.elevation.highlight`    | On pointer over, the elevation line left to the pointer
+| `.area`                   | The area below the elevation line
+| `.point`                  | The points on the elevation line
+| `.pointer-line.x`         | On pointer over, the vertical that follows the pointer
+| `.pointer-line.y`         | On pointer over, the horizontal that follows the pointer
+| `.pointer-circle`         | On pointer over, the circle that follows the pointer
+| `.pointer-circle-outline` | On pointer over, the outline of the circle that follows the pointer
