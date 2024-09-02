@@ -75,13 +75,13 @@ If `pointerEvents` is `true`, the component will emit the following custom event
 
 FIXME: TBD
 
-| CSS class                 | Description
-| ------------------------- | -----------
-| `.elevation`              | The elevation line
-| `.elevation.highlight`    | On pointer over, the elevation line left to the pointer
-| `.area`                   | The area below the elevation line
-| `.point`                  | The points on the elevation line
-| `.pointer-line.x`         | On pointer over, the vertical that follows the pointer
-| `.pointer-line.y`         | On pointer over, the horizontal that follows the pointer
-| `.pointer-circle`         | On pointer over, the circle that follows the pointer
-| `.pointer-circle-outline` | On pointer over, the outline of the circle that follows the pointer
+| CSS class                 | SVG type | Description
+| ------------------------- | -------- | -----------
+| `.elevation`              | `path`   | The elevation line
+| `.elevation.highlight`    | `path`   | On pointer over, the elevation line left to the pointer
+| `.area`                   | `path`   | The area below the elevation line
+| `.point`                  | `circle` | The points on the elevation line
+| `.pointer-line.x`         | `line`   | On pointer over, the vertical that follows the pointer
+| `.pointer-line.y`         | `line`   | On pointer over, the horizontal that follows the pointer
+| `.pointer-circle`         | `circle` | On pointer over, the circle that follows the pointer
+| `.pointer-circle-outline` | `circle` | On pointer over, the outline of the circle that follows the pointer
