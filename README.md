@@ -2,6 +2,10 @@
 
 A web component to display an elevation profile of a MultiLineString.
 
+## Demo
+
+[Demo](https://geoblocks.github.io/elevation-profile/index.html)
+
 ## Installation
 
 ```bash
