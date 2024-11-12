@@ -124,7 +124,7 @@ export default class ElevationProfile extends LitElement {
     const offset = this.yGrid.offset();
 
     return svg`
-      <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
         <g class="grid y" transform="translate(${this.margin.left}, 0)" />
         <g class="grid x" transform="translate(0, ${this.margin.bottom})" />
         <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
