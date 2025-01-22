@@ -10,7 +10,7 @@ import {line, area} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select, pointer} from 'd3-selection';
 
-import simplify from 'simplify-js';
+import simplify from './simplify.js';
 
 type PlotPoint = {
   x: number;

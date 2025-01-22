@@ -35,8 +35,7 @@
     "d3-scale": "4.0.2",
     "d3-selection": "3.0.0",
     "d3-shape": "3.2.0",
-    "lit": "3.2.1",
-    "simplify-js": "1.2.4"
+    "lit": "3.2.1"
   },
   "devDependencies": {
     "@parcel/packager-ts": "2.13.3",
