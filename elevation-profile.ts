@@ -33,6 +33,7 @@ export default class ElevationProfile extends LitElement {
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 20};
   @property({type: Object}) tickSize = {x: 100, y: 40};
   @property({type: Boolean}) pointerEvents = true;
+  private yAxisObserver: ResizeObserver | null = null;
 
   @state() pointer = {x: 0, y: 0};
   private resizeController = new ResizeController(this, {
@@ -199,8 +200,22 @@ export default class ElevationProfile extends LitElement {
   }
 
   override firstUpdated() {
+    const axisY = this.querySelector('.axis.y');
+    if (axisY) {
+      this.yAxisObserver = new ResizeObserver(() => {
+        this.requestUpdate()
+      })
+      this.yAxisObserver.observe(axisY);
+    }
     // FIXME: because the ref element are used before render is done, we need to force an update
     this.requestUpdate();
+  }
+
+  override disconnectedCallback() {
+    if (this.yAxisObserver) {
+      this.yAxisObserver.disconnect();
+    }
+    super.disconnectedCallback();
   }
 
   private pointerMove(event: PointerEvent) {
