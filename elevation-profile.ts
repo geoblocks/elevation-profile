@@ -30,7 +30,7 @@ export default class ElevationProfile extends LitElement {
   @property({type: Array}) lines: number[][][] = [];
   @property({type: Array}) points: number[][] = [];
   @property() updateScale = (x: scaleLinear, y: scaleLinear, width: number, height: number): void => {};
-  @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 40};
+  @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 20};
   @property({type: Object}) tickSize = {x: 100, y: 40};
   @property({type: Boolean}) pointerEvents = true;
 
@@ -100,13 +100,14 @@ export default class ElevationProfile extends LitElement {
 
   override render() {
     const [width, height] = this.resizeController.value ?? [0, 0];
+    const ml = (this.querySelector('.axis.y')?.getBoundingClientRect().width || 0) + this.margin.left
 
-    this.scaleX.range([this.margin.left, width - this.margin.right]);
+    this.scaleX.range([ml, width - this.margin.right]);
     this.scaleY.range([height - this.margin.bottom, this.margin.top]);
 
     this.area.y0(height - this.margin.bottom);
 
-    this.yGrid.tickSize(-width + this.margin.left + this.margin.right);
+    this.yGrid.tickSize(-width + ml + this.margin.right);
     this.xGrid.tickSize(height - this.margin.top - this.margin.bottom);
 
     const xTicks = width / this.tickSize.x;
@@ -125,19 +126,19 @@ export default class ElevationProfile extends LitElement {
 
     return svg`
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-        <g class="grid y" transform="translate(${this.margin.left}, 0)" />
+        <g class="grid y" transform="translate(${ml}, 0)" />
         <g class="grid x" transform="translate(0, ${this.margin.bottom})" />
         <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
-        <g class="axis y" transform="translate(${this.margin.left}, 0)" />
+        <g class="axis y" transform="translate(${ml}, 0)" />
 
-        ${guard([this.lines, width, height], () => svg`
+        ${guard([this.lines, width, height, ml], () => svg`
           <path class="area" d="${this.area(this.plotData)}" />
           <path class="elevation" d="${this.line(this.plotData)}" fill="none" />`
         )}
 
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
-          <g clip-path="polygon(0 0, ${this.pointer.x - this.margin.left} 0, ${this.pointer.x - this.margin.left} 100%, 0 100%)">
-            ${guard([this.lines, width, height], () => svg`<path class="elevation highlight" d="${this.line(this.plotData)}" fill="none" />`)}
+          <g clip-path="polygon(0 0, ${this.pointer.x - ml} 0, ${this.pointer.x - ml} 100%, 0 100%)">
+            ${guard([this.lines, width, height, ml], () => svg`<path class="elevation highlight" d="${this.line(this.plotData)}" fill="none" />`)}
           </g>
           <line
             class="pointer-line x"
@@ -148,7 +149,7 @@ export default class ElevationProfile extends LitElement {
           />
           <line
             class="pointer-line y"
-            x1="${this.margin.left}"
+            x1="${ml}"
             y1="${this.pointer.y}"
             x2="${width - this.margin.right}"
             y2="${this.pointer.y}"
@@ -169,10 +170,10 @@ export default class ElevationProfile extends LitElement {
           @pointerout="${this.pointerOut}"
         />
         <g
-          transform="translate(${this.margin.left},${height - this.margin.bottom + offset})"
+          transform="translate(${ml},${height - this.margin.bottom + offset})"
           class="axis"
           style="visibility: ${this.lines.length ? 'visible' : 'hidden'}">
-          <line x2="${width - this.margin.left - this.margin.right}"></line>
+          <line x2="${width - ml - this.margin.right}"></line>
         </g>
       </svg>
     `;
