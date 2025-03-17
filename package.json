@@ -29,7 +29,7 @@
     "publish-demo": "rm -rf build && npm run build-demo && gh-pages -d build"
   },
   "dependencies": {
-    "@lit-labs/observers": "2.0.4",
+    "@lit-labs/observers": "2.0.5",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
     "d3-scale": "4.0.2",
@@ -43,6 +43,6 @@
     "@parcel/transformer-typescript-types": "2.13.3",
     "gh-pages": "6.3.0",
     "parcel": "2.13.3",
-    "typescript": "5.7.3"
+    "typescript": "5.8.2"
   }
 }
