@@ -40,7 +40,8 @@ export default class ElevationProfile extends LitElement {
     callback: () => [this.offsetWidth, this.offsetHeight],
   });
 
-  private plotData: PlotPoint[] = [];
+  private plotData: PlotPoint[][] = [];
+  private flatPlotData: PlotPoint[] = [];
   private pointsData: PlotPoint[] = [];
   private scaleX = scaleLinear();
   private scaleY = scaleLinear();
@@ -82,12 +83,11 @@ export default class ElevationProfile extends LitElement {
       this.plotData.length = 0;
       for (const line of this.lines) {
         const data = line.map((coordinate) => ({x: coordinate[3], y: coordinate[2], coordinate}));
-        this.plotData.push(...simplify(data, this.tolerance));
-        this.plotData.push({x: line[line.length - 1][3], y: NaN, coordinate: []});
+        this.plotData.push(simplify(data, this.tolerance));
       }
-
-      this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
-      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y));
+      this.flatPlotData = this.plotData.flat();
+      this.scaleX.domain(extent(this.flatPlotData, (data: PlotPoint) => data.x));
+      this.scaleY.domain(extent(this.flatPlotData, (data: PlotPoint) => data.y));
 
       this.updateScale(this.scaleX, this.scaleY, this.offsetWidth, this.offsetHeight);
     }
@@ -132,14 +132,16 @@ export default class ElevationProfile extends LitElement {
         <g class="axis x" transform="translate(0, ${height - this.margin.bottom})" />
         <g class="axis y" transform="translate(${ml}, 0)" />
 
-        ${guard([this.lines, width, height, ml], () => svg`
-          <path class="area" d="${this.area(this.plotData)}" />
-          <path class="elevation" d="${this.line(this.plotData)}" fill="none" />`
-        )}
+        ${guard([this.lines, width, height, ml], () => this.plotData.map((line, index) => svg`
+          <path class="area index-${index}" d="${this.area(line)}" />
+          <path class="elevation index-${index}" d="${this.line(line)}" fill="none" />`
+        ))}
 
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
           <g clip-path="polygon(0 0, ${this.pointer.x - ml} 0, ${this.pointer.x - ml} 100%, 0 100%)">
-            ${guard([this.lines, width, height, ml], () => svg`<path class="elevation highlight" d="${this.line(this.plotData)}" fill="none" />`)}
+            ${guard([this.lines, width, height, ml], () => this.plotData.map((line, index) => svg`
+              <path class="elevation highlight index-${index}" d="${this.line(line)}" fill="none" />`
+            ))}
           </g>
           <line
             class="pointer-line x"
@@ -220,7 +222,7 @@ export default class ElevationProfile extends LitElement {
 
   private pointerMove(event: PointerEvent) {
     const pointerDistance = this.scaleX.invert(pointer(event)[0]);
-    const index = Math.min(this.bisectDistance.left(this.plotData, pointerDistance), this.plotData.length - 1);
+    const index = Math.min(this.bisectDistance.left(this.flatPlotData, pointerDistance), this.flatPlotData.length - 1);
 
     if (index < 0) {
       return;
@@ -231,7 +233,7 @@ export default class ElevationProfile extends LitElement {
     // // work out which date value is closest to the mouse
     // var d = mouseDate - d0[0] > d1[0] - mouseDate ? d1 : d0;
 
-    const data = this.plotData[index];
+    const data = this.flatPlotData[index];
 
     if (isNaN(data.y)) {
       return;
@@ -245,7 +247,7 @@ export default class ElevationProfile extends LitElement {
     this.dispatchEvent(
       new CustomEvent<OverDetails>('over', {
         detail: {
-          coordinate: this.plotData[index].coordinate,
+          coordinate: this.flatPlotData[index].coordinate,
           position: this.pointer
         }
       }),
