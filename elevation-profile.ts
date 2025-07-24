@@ -140,8 +140,9 @@ export default class ElevationProfile extends LitElement {
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
           <g clip-path="polygon(0 0, ${this.pointer.x - ml} 0, ${this.pointer.x - ml} 100%, 0 100%)">
             ${guard([this.lines, width, height, ml], () => this.plotData.map((line, index) => svg`
-              <path class="elevation highlight index-${index}" d="${this.line(line)}" fill="none" />`
-            ))}
+              <path class="elevation highlight index-${index}" d="${this.line(line)}" fill="none" />
+              <path class="area highlight index-${index}" d="${this.area(line)}" fill="none" />
+            `))}
           </g>
           <line
             class="pointer-line x"
