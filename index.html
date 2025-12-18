@@ -74,6 +74,26 @@
         stroke-width: 3;
       }
 
+      elevation-profile .elevation[data-value="paved"] {
+        stroke: #2ecc71;
+      }
+      elevation-profile .elevation[data-value="unpaved"] {
+        stroke: #e67e22;
+        stroke-dasharray: 5, 5;
+      }
+
+      /* Trail band styles */
+      elevation-profile .trail-band {
+        fill: transparent;
+        height: 2px;
+      }
+      elevation-profile .trail-band[data-value="bergwanderweg"] {
+        fill: #e74c3c;
+      }
+      elevation-profile .trail-band[data-value="other"] {
+        fill: #3498db;
+      }
+
       elevation-profile .area {
         fill: #e6e6e6;
         fill-opacity: 0.85;
@@ -119,69 +139,117 @@
       });
 
       setLine.addEventListener("click", () => {
-        profile.lines = [
-          [
-            [
-              2752448.6890149354,
-              1212435.0280630554,
-              570,
-              0
-            ],
-            [
-              2750063.3798349514,
-              1212552.370432813,
-              480,
-              480
-            ],
-            [
-              2749668.7007208047,
-              1212135.4200102754,
-              656.9,
-              1000
-            ],
-            [
-              2748077.860283412,
-              1211515.1656088883,
-              1012.8,
-              1500
-            ],
-            [
-              2744845.780407053,
-              1205982.2556253774,
-              1003.2,
-              2000
-            ]
-          ]
-        ];
+        // Generate a more realistic dataset with ~50 points over 5000m distance
+        const coordinates = [];
+        let baseElevation = 450;
+
+        for (let i = 0; i < 50; i++) {
+          const distance = i * 100; // 100m intervals
+          // Create elevation variation with some ups and downs
+          const elevationChange = Math.sin(i * 0.3) * 80 + Math.cos(i * 0.15) * 40;
+          const elevation = baseElevation + elevationChange + (i * 2); // Gradual climb
+
+          coordinates.push([
+            2752448 - (i * 50), // X coordinate
+            1212435 + (i * 20), // Y coordinate
+            Math.round(elevation * 10) / 10, // Elevation
+            distance // Distance along route
+          ]);
+        }
+
+        profile.lines = [coordinates];
         profile.points = [];
+
+        // Add segment data for the line (with holes)
+        profile.lineSegments = [
+          [22, 35, "paved"],
+          [35, 42, "unpaved"],
+          [42, 50, "paved"]
+        ];
+
+        // Add segment data for trail bands (with holes)
+        profile.xAxisSegments = [
+          [0, 8, "bergwanderweg"],
+          [8, 25, "other"],
+          [32, 45, "other"],
+          [45, 50, "bergwanderweg"]
+        ];
       });
 
       setLines.addEventListener("click", () => {
-        profile.lines = [
-          [
-            [740073, 5905947, 434, 0],
-            [740073, 5905947, 485, 25],
-            [740073, 5905947, 490, 60],
-            [740072, 5905940, 512, 100],
-          ],
-          [
-            [740007, 5905729, 490, 155],
-            [740000, 5905709, 489, 169],
-            [739997, 5905704, 501, 173],
-            [739997, 5905704, 512, 180],
-            [739997, 5905704, 501, 210],
-          ], [
-            [740007, 5905729, 512, 255],
-            [740000, 5905709, 505, 369],
-            [739997, 5905704, 501, 390],
-          ]
-        ];
+        // Generate 3 realistic line segments with varying elevations
+        const line1 = [];
+        const line2 = [];
+        const line3 = [];
+
+        let baseX = 740073;
+        let baseY = 5905947;
+        let distance = 0;
+
+        // First line: 20 points, gradual climb
+        for (let i = 0; i < 20; i++) {
+          const elevation = 434 + (i * 3) + Math.sin(i * 0.5) * 15;
+          line1.push([
+            baseX - (i * 30),
+            baseY - (i * 20),
+            Math.round(elevation * 10) / 10,
+            distance
+          ]);
+          distance += 40;
+        }
+
+        // Second line: 25 points, varied terrain
+        baseX = line1[line1.length - 1][0];
+        baseY = line1[line1.length - 1][1];
+        for (let i = 0; i < 25; i++) {
+          const elevation = 490 + Math.sin(i * 0.4) * 30 + Math.cos(i * 0.2) * 20;
+          line2.push([
+            baseX - (i * 25),
+            baseY - (i * 15),
+            Math.round(elevation * 10) / 10,
+            distance
+          ]);
+          distance += 35;
+        }
+
+        // Third line: 18 points, steep descent then climb
+        baseX = line2[line2.length - 1][0];
+        baseY = line2[line2.length - 1][1];
+        for (let i = 0; i < 18; i++) {
+          const elevation = 510 - (i * 2) + Math.sin(i * 0.6) * 25;
+          line3.push([
+            baseX - (i * 35),
+            baseY - (i * 18),
+            Math.round(elevation * 10) / 10,
+            distance
+          ]);
+          distance += 45;
+        }
+
+        profile.lines = [line1, line2, line3];
 
         profile.points = [
-          [740073, 5905947, 434, 0],
-          [740073, 5905947, 490, 60],
-          [739997, 5905704, 512, 180],
-          [739997, 5905704, 501, 390],
+          line1[0],
+          line1[10],
+          line2[12],
+          line3[line3.length - 1]
+        ];
+
+        // Add segment data
+        profile.lineSegments = [
+          [0, 15, "paved"],
+          [15, 28, "unpaved"],
+          [28, 45, "paved"],
+          [45, 55, "unpaved"],
+          [55, 63, "paved"]
+        ];
+
+        profile.xAxisSegments = [
+          [0, 20, "bergwanderweg"],
+          // [10, 30, "other"],
+          // [30, 40, "bergwanderweg"],
+          // [40, 55, "other"],
+          // [55, 63, "bergwanderweg"]
         ];
       });
 
