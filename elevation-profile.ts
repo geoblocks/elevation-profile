@@ -53,6 +53,7 @@ export default class ElevationProfile extends LitElement {
   private pointsData: PlotPoint[] = [];
   private lineSegmentsData: SegmentData = [];
   private xAxisSegmentsData: SegmentData = [];
+  private originalToSimplifiedIndexMap: Map<number, number> = new Map();
   private scaleX = scaleLinear();
   private scaleY = scaleLinear();
 
@@ -91,10 +92,34 @@ export default class ElevationProfile extends LitElement {
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('lines')) {
       this.plotData.length = 0;
+      this.originalToSimplifiedIndexMap.clear();
+      let originalIndex = 0;
+      let simplifiedIndex = 0;
+
       for (const line of this.lines) {
-        const data = line.map((coordinate) => ({x: coordinate[3], y: coordinate[2], coordinate}));
-        this.plotData.push(...simplify(data, this.tolerance));
+        const data = line.map((coordinate, i) => {
+          this.originalToSimplifiedIndexMap.set(originalIndex + i, -1); // mark all as not included initially
+          return {x: coordinate[3], y: coordinate[2], coordinate};
+        });
+
+        const simplified = simplify(data, this.tolerance);
+
+        // Map which original points made it through simplification
+        for (const simplifiedPoint of simplified) {
+          const origIdx = line.findIndex(coord =>
+            coord[3] === simplifiedPoint.x && coord[2] === simplifiedPoint.y
+          );
+          if (origIdx >= 0) {
+            this.originalToSimplifiedIndexMap.set(originalIndex + origIdx, simplifiedIndex);
+            simplifiedIndex++;
+          }
+        }
+
+        this.plotData.push(...simplified);
         this.plotData.push({x: line[line.length - 1][3], y: NaN, coordinate: []});
+        simplifiedIndex++; // account for the NaN separator
+
+        originalIndex += line.length;
       }
 
       this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
@@ -110,10 +135,14 @@ export default class ElevationProfile extends LitElement {
     }
     // FIXME: what if this.lines is not set yet?
     if (changedProperties.has('lineSegments')) {
-      this.lineSegmentsData = fillUnspecified(this.lineSegments || [], this.lines.length);
+      const totalOriginalPoints = this.lines.reduce((sum, line) => sum + line.length, 0);
+      const originalSegments = fillUnspecified(this.lineSegments || [], totalOriginalPoints);
+      this.lineSegmentsData = remapSegments(originalSegments, this.originalToSimplifiedIndexMap);
     }
     if (changedProperties.has('xAxisSegments')) {
-      this.xAxisSegmentsData = fillUnspecified(this.xAxisSegments || [], this.lines.length);
+      const totalOriginalPoints = this.lines.reduce((sum, line) => sum + line.length, 0);
+      const originalSegments = fillUnspecified(this.xAxisSegments || [], totalOriginalPoints);
+      this.xAxisSegmentsData = remapSegments(originalSegments, this.originalToSimplifiedIndexMap);
     }
   }
 
@@ -203,17 +232,15 @@ export default class ElevationProfile extends LitElement {
 
   private renderLineSegments(className: string) {
     return this.lineSegmentsData.map(([start, end, value]) => {
-      // FIXME: take line simplification into account: we have less points in plotData than in lines
-      const segmentData = this.plotData.slice(start, end + 1);
+      const segmentData = this.plotData.slice(start, end);
       return svg`<path class="${className}" data-value="${ifDefined(value)}" d="${this.line(segmentData)}" fill="none" />`;
     });
   }
 
   private renderTrailBands() {
     return this.xAxisSegmentsData.map(([start, end, value]) => {
-      // FIXME: take line simplification into account: we have less points in plotData than in lines
-      const x1 = this.scaleX(this.plotData[start]?.x ?? 0);
-      const x2 = this.scaleX(this.plotData[end]?.x ?? 0);
+      const x1 = this.scaleX(this.plotData[start].x);
+      const x2 = this.scaleX(this.plotData[end - 1].x);
       const bandWidth = x2 - x1;
       return svg`<rect class="trail-band" data-value="${ifDefined(value)}" x="${x1}" width="${bandWidth}" />`;
     });
@@ -337,6 +364,33 @@ function getSegmentValueAtIndex(segments: SegmentData, index: number): string | 
   }
   // we must never be here because of fillUnspecified
   return null;
+}
+
+function remapSegments(segments: SegmentData, indexMap: Map<number, number>): SegmentData {
+  const remappedSegments: SegmentData = [];
+
+  for (const [start, end, value] of segments) {
+    // Find the first simplified index that corresponds to an original index >= start
+    let newStart = -1;
+    let newEnd = -1;
+
+    for (let i = start; i <= end; i++) {
+      const simplifiedIdx = indexMap.get(i);
+      if (simplifiedIdx !== undefined && simplifiedIdx >= 0) {
+        if (newStart === -1) {
+          newStart = simplifiedIdx;
+        }
+        newEnd = simplifiedIdx;
+      }
+    }
+
+    // Only add the segment if we found at least one point that survived simplification
+    if (newStart >= 0 && newEnd >= 0) {
+      remappedSegments.push([newStart, newEnd + 1, value]);
+    }
+  }
+
+  return remappedSegments;
 }
 
 
