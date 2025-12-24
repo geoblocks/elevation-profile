@@ -29,13 +29,13 @@
     "publish-demo": "rm -rf build && npm run build-demo && gh-pages -d build"
   },
   "dependencies": {
-    "@lit-labs/observers": "2.0.6",
+    "@lit-labs/observers": "2.1.0",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
     "d3-scale": "4.0.2",
     "d3-selection": "3.0.0",
     "d3-shape": "3.2.0",
-    "lit": "3.3.1"
+    "lit": "3.3.2"
   },
   "devDependencies": {
     "@parcel/packager-ts": "2.16.3",
