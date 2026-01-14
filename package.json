@@ -1,6 +1,6 @@
 {
   "name": "@geoblocks/elevation-profile",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "license": "BSD-3-Clause",
   "repository": "github:geoblocks/elevation-profile",
   "type": "module",
