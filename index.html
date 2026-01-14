@@ -1,1 +1,114 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><script type="module" src="index.544ed20f.js"></script><style>body{margin:0}.container{margin:50px;position:relative}#tooltip{color:#fff;background-color:#707070;padding:10px;display:none;position:absolute;transform:translate(-50%,-100%)}elevation-profile{width:80%;height:300px;display:block}elevation-profile .grid.x{display:none}elevation-profile line{shape-rendering:crispEdges}elevation-profile .axis .domain,.grid .domain{display:none}elevation-profile .axis line{stroke:#2d2d2d}elevation-profile .grid line{stroke:#2d2d2d40}elevation-profile .pointer-line{stroke:#707070;stroke-opacity:.3;stroke-width:2px;stroke-dasharray:3 3}elevation-profile .pointer-circle{fill:#3761a4;stroke:#fff;stroke-width:3px}elevation-profile .pointer-circle-outline{fill:#000;fill-opacity:.2}elevation-profile .elevation,elevation-profile .elevation.highlight{stroke:#3761a4;stroke-width:2px;stroke-linejoin:round}elevation-profile .elevation.highlight{stroke-width:3px}elevation-profile .area{fill:#e6e6e6;fill-opacity:.85}elevation-profile .point{fill:#f2000c;stroke:#fff;stroke-width:3px}</style></head><body> <div class="container"> <div id="tooltip"></div> <elevation-profile locale="de-CH"></elevation-profile> </div> <button id="set-lines">multi linestring</button> <button id="set-line">linestring</button> <button id="save">save as png</button> <pre id="logs"></pre> <script>const e=document.querySelector("elevation-profile"),t=document.querySelector("#tooltip"),n=document.querySelector("#logs"),l=document.querySelector("#set-lines"),o=document.querySelector("#set-line");document.querySelector("#save").addEventListener("click",()=>{let t=new Blob([e.innerHTML],{type:"image/svg+xml"}),n=URL.createObjectURL(t),l=document.createElement("a");l.href=n,l.download="elevation.svg",l.click()}),o.addEventListener("click",()=>{e.lines=[[[2752448.6890149354,1212435.0280630554,570,0],[2750063.3798349514,1212552.370432813,480,480],[2749668.7007208047,1212135.4200102754,656.9,1e3],[2748077.860283412,1211515.1656088883,1012.8,1500],[2744845.780407053,1205982.2556253774,1003.2,2e3]]],e.points=[]}),l.addEventListener("click",()=>{e.lines=[[[740073,5905947,434,0],[740073,5905947,485,25],[740073,5905947,490,60],[740072,5905940,512,100]],[[740007,5905729,490,155],[74e4,5905709,489,169],[739997,5905704,501,173],[739997,5905704,512,180],[739997,5905704,501,210]],[[740007,5905729,512,255],[74e4,5905709,505,369],[739997,5905704,501,390]]],e.points=[[740073,5905947,434,0],[740073,5905947,490,60],[739997,5905704,512,180],[739997,5905704,501,390]]}),e.addEventListener("over",e=>{n.textContent=JSON.stringify(e.detail,null,2),t.style.display="block",t.textContent=`${e.detail.coordinate[2]} m`,t.style.left=`${e.detail.position.x}px`,t.style.top=`${e.detail.position.y-20}px`}),e.addEventListener("out",e=>{n.textContent="",t.style.display="none"}),l.click();</script> </body></html>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>Elevation Profile Demo - @geoblocks/elevation-profile</title><script type=module src=elevation-profile.0a2ce1e2.js></script><style>:root{--color-bg:#f5f5f5;--color-fg:#1a1a1a;--color-border:#d0d0d0;--color-card-bg:#fff;--color-subtle:#666;--color-accent:#2a2a2a}body{background:var(--color-bg);color:var(--color-fg);margin:0;font-family:SF Mono,Monaco,Inconsolata,Fira Code,Droid Sans Mono,Source Code Pro,monospace;line-height:1.5}.header{background:var(--color-card-bg);border-bottom:1px solid var(--color-border);margin-bottom:48px;padding:48px 32px}.header h1{color:var(--color-fg);letter-spacing:-.5px;margin:0 0 8px;font-size:32px;font-weight:600}.header p{color:var(--color-subtle);margin:0;font-size:14px}.container{max-width:1200px;margin:0 auto;padding:0 32px 48px}.example-card{background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;margin-bottom:32px;padding:32px}.example-header{border-bottom:1px solid var(--color-border);justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;display:flex}.example-header h2{color:var(--color-fg);margin:0;font-size:18px;font-weight:600}.example-description{color:var(--color-subtle);margin-bottom:24px;font-size:14px;line-height:1.6}#tooltip{background-color:var(--color-accent);color:#fff;border:1px solid var(--color-border);pointer-events:none;z-index:1000;white-space:pre-wrap;border-radius:2px;max-width:300px;padding:8px 12px;font-size:12px;line-height:1.4;display:none;position:absolute;transform:translate(10px,-50%);box-shadow:0 2px 4px #0000001a}elevation-profile{width:100%;height:300px;display:block}elevation-profile .grid.x{display:none}elevation-profile line{shape-rendering:crispEdges}elevation-profile .axis .domain,elevation-profile .grid .domain{display:none}elevation-profile .axis line{stroke:#2a2a2a}elevation-profile .grid line{stroke:#e0e0e0}elevation-profile .pointer-line{stroke:#666;stroke-opacity:.5;stroke-width:1px;stroke-dasharray:3 3}elevation-profile .pointer-circle{fill:#3761a4;stroke:#fff;stroke-width:2px}elevation-profile .pointer-circle-outline{fill:#000;fill-opacity:.1}elevation-profile .elevation,elevation-profile .elevation.highlight{stroke:#3761a4;stroke-width:2px;stroke-linejoin:round}elevation-profile .elevation.highlight{stroke-width:3px}elevation-profile .elevation[data-value=paved]{stroke:#2ecc71}elevation-profile .elevation[data-value=unpaved]{stroke:#e67e22;stroke-dasharray:5 5}elevation-profile .elevation[data-value=stairs]{stroke:#9b59b6}elevation-profile .elevation[data-value=tunnel]{stroke:#f2000c}elevation-profile .elevation[data-value=aboveground]{stroke:#1abc9c}elevation-profile .trail-band{fill:none;height:3px}elevation-profile .trail-band[data-value=wanderweg]{fill:#e7ab3c}elevation-profile .trail-band[data-value=bergwanderweg]{fill:#e74c3c}elevation-profile .trail-band[data-value=other]{fill:#3498db}elevation-profile .area{fill:#e8e8e8;fill-opacity:.5}elevation-profile .point{fill:#1a1a1a;stroke:#fff;stroke-width:2px}.controls{flex-wrap:wrap;gap:12px;margin-top:24px;display:flex}.legend{background:var(--color-bg);border:1px solid var(--color-border);border-radius:2px;margin-top:24px;padding:16px}.legend-title{text-transform:uppercase;letter-spacing:.5px;color:var(--color-fg);margin-bottom:12px;font-size:12px;font-weight:600}.legend-items{flex-wrap:wrap;gap:20px;display:flex}.legend-item{align-items:center;gap:8px;font-size:12px;display:flex}.legend-color{border-radius:1px;width:24px;height:2px}.legend-color.dashed{background-image:repeating-linear-gradient(90deg,currentColor 0 5px,#0000 5px 10px);height:2px}.code-block{border:1px solid var(--color-border);color:#e8e8e8;white-space:pre-wrap;word-wrap:break-word;background:#2a2a2a;border-radius:2px;margin-top:16px;padding:16px;font-family:SF Mono,Monaco,Inconsolata,monospace;font-size:12px;overflow-x:auto}.btn{background:var(--color-accent);color:#fff;border:1px solid var(--color-accent);cursor:pointer;border-radius:2px;align-items:center;gap:8px;padding:10px 16px;font-family:inherit;font-size:12px;font-weight:600;transition:all .15s;display:inline-flex}.btn:hover{background:#1a1a1a;border-color:#1a1a1a}.btn:active{transform:translateY(1px)}code{background:var(--color-bg);border:1px solid var(--color-border);border-radius:2px;padding:2px 6px;font-family:inherit;font-size:12px}</style><body>
+    <div class=header>
+      <h1>@geoblocks/elevation-profile</h1>
+      <p>Interactive elevation profile component with segment support for trail visualization</p>
+    </div>
+
+    <div class=container>
+      <div id=tooltip></div>
+
+      
+      <div class=example-card>
+        <div class=example-header>
+          <h2>Basic Single Line</h2>
+        </div>
+        <p class=example-description>
+          A simple elevation profile showing a single line without any segment styling.
+        </p>
+        <elevation-profile id=profile-basic locale=de-CH></elevation-profile>
+      </div>
+
+      
+      <div class=example-card>
+        <div class=example-header>
+          <h2>Multiple Lines (MultiLineString)</h2>
+        </div>
+        <p class=example-description>
+          Elevation profile with multiple disconnected line segments (e.g., separated by a ferry or bus connection). The gap between segments is clearly visible.
+        </p>
+        <elevation-profile id=profile-multi locale=de-CH></elevation-profile>
+      </div>
+
+      
+      <div class=example-card>
+        <div class=example-header>
+          <h2>Line with Surface Segments</h2>
+        </div>
+        <p class=example-description>
+          Shows different surface types (paved, unpaved, stairs) along the elevation profile using the <code>lineSegments</code> property.
+        </p>
+        <elevation-profile id=profile-segments locale=de-CH></elevation-profile>
+        <div class=legend>
+          <div class=legend-title>Surface Types</div>
+          <div class=legend-items>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#2ecc71></div>
+              <span>Paved</span>
+            </div>
+            <div class=legend-item>
+              <div class="dashed legend-color" style=color:#e67e22></div>
+              <span>Unpaved</span>
+            </div>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#9b59b6></div>
+              <span>Stairs</span>
+            </div>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#f2000c></div>
+              <span>Tunnel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class=example-card>
+        <div class=example-header>
+          <h2>Full Featured with Trail Bands</h2>
+        </div>
+        <p class=example-description>
+          Complete example showing both surface segments and trail category bands below the x-axis using <code>lineSegments</code> and <code>xAxisSegments</code>.
+        </p>
+        <elevation-profile id=profile-full locale=de-CH></elevation-profile>
+        <div class=legend>
+          <div class=legend-title>Surface Types &amp; Trail Categories</div>
+          <div class=legend-items>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#2ecc71></div>
+              <span>Paved</span>
+            </div>
+            <div class=legend-item>
+              <div class="dashed legend-color" style=color:#e67e22></div>
+              <span>Unpaved</span>
+            </div>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#1abc9c></div>
+              <span>Above Ground</span>
+            </div>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#e7ab3c></div>
+              <span>Wanderweg</span>
+            </div>
+            <div class=legend-item>
+              <div class=legend-color style=background-color:#3498db></div>
+              <span>Other</span>
+            </div>
+          </div>
+        </div>
+        <div class=controls>
+          <button id=export-svg class=btn>
+            <span>↓</span>
+            <span>Export as SVG</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type=module>"loading"===document.readyState?document.addEventListener("DOMContentLoaded",e):e();function e(){let e=document.querySelector("#profile-basic"),t=document.querySelector("#profile-multi"),n=document.querySelector("#profile-segments"),l=document.querySelector("#profile-full"),o=document.querySelector("#tooltip"),i=[[[937484.88,5937783.93,441.26,0],[937468.19,5937779.04,441.4,11.86],[937455.94,5937775.77,441.61,20.5],[937445.92,5937772.51,441.8,27.68],[937439.24,5937770.88,441.94,32.36],[937432.56,5937769.25,442.1,37.05],[937424.77,5937769.25,442.25,42.36],[937416.98,5937767.62,442.4,47.79],[937398.05,5937767.62,442.97,60.69],[937386.92,5937767.62,443.27,68.27],[937384.7,5937767.62,443.34,69.79],[937369.11,5937769.25,443.7,80.47],[937354.64,5937765.98,444.14,90.58],[937353.53,5937765.98,444.2,91.34],[937355.75,5937754.56,444.69,99.27],[937355.75,5937751.3,444.9,101.49],[937361.32,5937733.36,445.89,114.3],[937366.89,5937705.62,447.4,133.58],[937373.56,5937687.68,448.3,146.63],[937374.68,5937681.15,448.7,151.14],[937373.56,5937679.52,448.79,152.49],[937372.45,5937677.89,448.9,153.84],[937371.34,5937672.99,449.2,157.26],[937365.77,5937668.1,449.36,162.31],[937364.66,5937666.47,449.38,163.66],[937340.17,5937656.68,449.4,181.63],[937330.15,5937651.78,449.3,189.23],[937324.58,5937648.52,449.3,193.63],[937311.23,5937640.36,449.09,204.3],[937306.77,5937637.1,449,208.06],[937304.55,5937633.84,448.99,210.75],[937303.43,5937632.21,448.97,212.1],[937302.32,5937630.58,448.9,213.44],[937296.75,5937622.42,448.85,220.17],[937294.53,5937619.16,448.8,222.87],[937290.07,5937611,448.7,229.2],[937277.83,5937591.42,448.4,244.94],[937273.38,5937581.63,448.31,252.27],[937267.81,5937571.84,448.21,259.94],[937266.7,5937568.58,448.1,262.29],[937265.58,5937568.58,448.16,263.05],[937263.36,5937563.69,448.1,266.72],[937258.91,5937558.79,448.1,271.23],[937255.57,5937555.53,448.1,274.41],[937252.23,5937550.64,448.04,278.45],[937250,5937549,448,280.33],[937241.09,5937540.85,448,288.56],[937233.3,5937537.58,448,294.32],[937223.28,5937532.69,448.1,301.92],[937186.55,5937521.27,448.5,328.14],[937138.68,5937503.33,449,362.98],[937129.77,5937500.06,449.1,369.45],[937121.98,5937496.8,449.2,375.21],[937111.96,5937491.91,449.3,382.81],[937107.51,5937488.64,449.4,386.57],[937100.83,5937485.38,449.45,391.63],[937088.59,5937480.49,449.6,400.62],[937070.78,5937470.7,449.77,414.48],[937040.72,5937452.75,450.1,438.34],[937028.47,5937446.23,450.29,447.79],[937026.25,5937446.23,450.3,449.31],[937025.13,5937444.6,450.33,450.66],[937011.78,5937436.44,450.6,461.32],[936958.34,5937411.97,452.69,501.38],[936912.7,5937390.76,454.35,535.69],[936853.7,5937361.39,456.72,580.61],[936847.02,5937358.13,456.9,585.67],[936839.23,5937354.87,457.2,591.43],[936832.55,5937348.34,457.41,597.79],[936829.21,5937343.45,457.49,601.83],[936823.65,5937346.71,457.3,606.23],[936816.97,5937348.34,457.31,610.92],[936805.84,5937353.24,457.25,619.21],[936802.5,5937354.87,457.2,621.74],[936800.27,5937358.13,457.1,624.43],[936793.59,5937353.24,457.2,630.08],[936789.14,5937349.98,457.3,633.84],[936785.8,5937349.98,457.31,636.11],[936773.55,5937348.34,457.4,644.53],[936747.95,5937345.08,457.6,662.13],[936688.95,5937341.82,458.9,702.4],[936667.8,5937338.56,459.3,716.99],[936648.87,5937336.92,459.6,729.94],[936622.16,5937335.29,460.03,748.18],[936608.8,5937332.03,460.3,757.55],[936594.33,5937328.77,460.6,767.66],[936584.31,5937327.14,460.74,774.58],[936580.97,5937325.5,460.8,777.12],[936564.27,5937318.98,461.21,789.34],[936569.84,5937314.09,461.41,794.39],[936578.74,5937315.72,462.42,800.56],[936579.86,5937315.72,462.48,801.32],[936582.08,5937301.03,464.37,811.44]]],d=[[[750639.57,5908792.26,442.5,0],[750609.52,5908759.74,444.2,45],[750591.7,5908741.85,445.8,85],[750566.1,5908719.09,447.3,125],[750539.38,5908697.95,448.9,165],[750507.1,5908673.56,450.1,205],[750460.35,5908639.41,451.8,260],[750429.18,5908618.28,452.5,300],[750379.08,5908582.5,453.2,360],[750297.82,5908527.22,454,450]],[[747569.38,5908385.76,465.5,650],[747587.19,5908366.25,466.8,690],[747660.66,5908288.2,468.2,780],[747686.27,5908260.56,469.5,820],[747700.74,5908244.3,470.3,850],[747737.47,5908205.28,471.8,910],[747767.53,5908171.13,473.2,960],[747785.34,5908150,474.5,995],[747798.7,5908132.11,475.8,1025],[747802.04,5908125.61,476.4,1045]]];e.lines=i,t.lines=d,n.lines=i,n.lineSegments=[[0,37,"paved"],[37,38,"tunnel"],[38,70,"paved"],[70,80,"stairs"],[80,95,"unpaved"]],l.lines=d,l.lineSegments=[[0,5,"paved"],[5,8,"aboveground"],[8,9,"unpaved"],[11,15,"paved"],[15,20,"unpaved"]],l.xAxisSegments=[[0,7,"other"],[7,9,"wanderweg"],[11,16,"other"],[16,20,"wanderweg"]];let s=document.querySelector("#export-svg");s&&s.addEventListener("click",()=>{let e=new Blob([l.innerHTML],{type:"image/svg+xml"}),t=URL.createObjectURL(e),n=document.createElement("a");n.href=t,n.download="elevation-profile.svg",n.click(),URL.revokeObjectURL(t)}),[e,t,n,l].forEach(e=>{e.addEventListener("over",t=>{let n=e.getBoundingClientRect(),l=n.left+t.detail.position.x+window.scrollX,i=n.top+t.detail.position.y+window.scrollY,d=t.detail,s=d.coordinate,r=`Elevation: ${s[2]} m
+`;r+=`Distance: ${s[3]} m
+X: ${s[0].toFixed(2)}
+Y: ${s[1].toFixed(2)}`,d.segments&&(null!==d.segments.line&&(r+=`
+Line Segment: ${d.segments.line}`),null!==d.segments.xAxis&&(r+=`
+Trail: ${d.segments.xAxis}`)),o.style.display="block",o.textContent=r,o.style.left=`${l}px`,o.style.top=`${i}px`}),e.addEventListener("out",()=>{o.style.display="none"})})}</script>
+  
+
