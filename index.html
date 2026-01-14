@@ -2,32 +2,112 @@
 
 <html>
   <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Elevation Profile Demo - @geoblocks/elevation-profile</title>
+
     <script type="module" src="./elevation-profile.ts"></script>
     <style>
+      :root {
+        --color-bg: #f5f5f5;
+        --color-fg: #1a1a1a;
+        --color-border: #d0d0d0;
+        --color-card-bg: #ffffff;
+        --color-subtle: #666666;
+        --color-accent: #2a2a2a;
+      }
+
       body {
         margin: 0;
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
+        background: var(--color-bg);
+        color: var(--color-fg);
+        line-height: 1.5;
       }
+
+      .header {
+        background: var(--color-card-bg);
+        border-bottom: 1px solid var(--color-border);
+        padding: 48px 32px;
+        margin-bottom: 48px;
+      }
+
+      .header h1 {
+        margin: 0 0 8px 0;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--color-fg);
+        letter-spacing: -0.5px;
+      }
+
+      .header p {
+        margin: 0;
+        color: var(--color-subtle);
+        font-size: 14px;
+      }
+
       .container {
-        position: relative;
-        margin: 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px 48px;
+      }
+
+      .example-card {
+        background: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+        padding: 32px;
+        margin-bottom: 32px;
+      }
+
+      .example-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .example-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-fg);
+      }
+
+      .example-description {
+        color: var(--color-subtle);
+        margin-bottom: 24px;
+        line-height: 1.6;
+        font-size: 14px;
       }
 
       #tooltip {
         display: none;
         position: absolute;
-        background-color: #707070;
-        color: #fff;
-        padding: 10px;
-        transform: translate(-50%, -100%);
+        background-color: var(--color-accent);
+        color: #ffffff;
+        padding: 8px 12px;
+        border-radius: 2px;
+        border: 1px solid var(--color-border);
+        transform: translate(10px, -50%);
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        white-space: pre-wrap;
+        max-width: 300px;
+        line-height: 1.4;
       }
 
       elevation-profile {
         display: block;
-        width: 80%;
+        width: 100%;
         height: 300px;
       }
 
+      /* Elevation Profile Styles */
       elevation-profile .grid.x {
         display: none;
       }
@@ -36,169 +116,534 @@
         shape-rendering: crispEdges;
       }
 
-      elevation-profile .axis .domain, .grid .domain {
+      elevation-profile .axis .domain,
+      elevation-profile .grid .domain {
         display: none;
       }
 
       elevation-profile .axis line {
-        stroke: rgba(45, 45, 45, 1.0);
+        stroke: #2a2a2a;
       }
 
       elevation-profile .grid line {
-        stroke: rgba(45, 45, 45, 0.25);
+        stroke: #e0e0e0;
       }
 
       elevation-profile .pointer-line {
-        stroke: #707070;
-        stroke-opacity: 0.3;
-        stroke-width: 2;
+        stroke: #666666;
+        stroke-opacity: 0.5;
+        stroke-width: 1;
         stroke-dasharray: 3, 3;
       }
 
       elevation-profile .pointer-circle {
         fill: #3761a4;
-        stroke: #fff;
-        stroke-width: 3;
-      }
-      elevation-profile .pointer-circle-outline {
-        fill: #000;
-        fill-opacity: 0.2;
+        stroke: white;
+        stroke-width: 2;
       }
 
-      elevation-profile .elevation, elevation-profile .elevation.highlight {
+      elevation-profile .pointer-circle-outline {
+        fill: #000;
+        fill-opacity: 0.1;
+      }
+
+      elevation-profile .elevation,
+      elevation-profile .elevation.highlight {
         stroke: #3761a4;
         stroke-width: 2;
         stroke-linejoin: round;
       }
+
       elevation-profile .elevation.highlight {
         stroke-width: 3;
       }
 
+      /* Segment styles for paved/unpaved */
+      elevation-profile .elevation[data-value="paved"] {
+        stroke: #2ecc71;
+      }
+
+      elevation-profile .elevation[data-value="unpaved"] {
+        stroke: #e67e22;
+        stroke-dasharray: 5, 5;
+      }
+
+      elevation-profile .elevation[data-value="stairs"] {
+        stroke: #9b59b6;
+      }
+
+      elevation-profile .elevation[data-value="tunnel"] {
+        stroke: #f2000c;
+      }
+
+      elevation-profile .elevation[data-value="aboveground"] {
+        stroke: #1abc9c;
+      }
+
+      /* Trail band styles */
+      elevation-profile .trail-band {
+        fill: none;
+        height: 3px;
+      }
+
+      elevation-profile .trail-band[data-value="wanderweg"] {
+        fill: #e7ab3c;
+      }
+
+      elevation-profile .trail-band[data-value="bergwanderweg"] {
+        fill: #e74c3c;
+      }
+
+      elevation-profile .trail-band[data-value="other"] {
+        fill: #3498db;
+      }
+
       elevation-profile .area {
-        fill: #e6e6e6;
-        fill-opacity: 0.85;
+        fill: #e8e8e8;
+        fill-opacity: 0.5;
       }
 
       elevation-profile .point {
-        fill: #F2000C;
-        stroke: #fff;
-        stroke-width: 3;
+        fill: #1a1a1a;
+        stroke: white;
+        stroke-width: 2;
       }
 
+      .controls {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .legend {
+        margin-top: 24px;
+        padding: 16px;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+      }
+
+      .legend-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--color-fg);
+      }
+
+      .legend-items {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+      }
+
+      .legend-color {
+        width: 24px;
+        height: 2px;
+        border-radius: 1px;
+      }
+
+      .legend-color.dashed {
+        height: 2px;
+        background-image: repeating-linear-gradient(
+          to right,
+          currentColor 0,
+          currentColor 5px,
+          transparent 5px,
+          transparent 10px
+        );
+      }
+
+      .code-block {
+        margin-top: 16px;
+        padding: 16px;
+        background: #2a2a2a;
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+        overflow-x: auto;
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+        font-size: 12px;
+        color: #e8e8e8;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: var(--color-accent);
+        color: #ffffff;
+        border: 1px solid var(--color-accent);
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .btn:hover {
+        background: #1a1a1a;
+        border-color: #1a1a1a;
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      code {
+        background: var(--color-bg);
+        padding: 2px 6px;
+        border-radius: 2px;
+        font-size: 12px;
+        font-family: inherit;
+        border: 1px solid var(--color-border);
+      }
     </style>
   </head>
   <body>
+    <div class="header">
+      <h1>@geoblocks/elevation-profile</h1>
+      <p>Interactive elevation profile component with segment support for trail visualization</p>
+    </div>
+
     <div class="container">
       <div id="tooltip"></div>
 
-      <elevation-profile locale="de-CH"></elevation-profile>
+      <!-- Example 1: Basic Single Line -->
+      <div class="example-card">
+        <div class="example-header">
+          <h2>Basic Single Line</h2>
+        </div>
+        <p class="example-description">
+          A simple elevation profile showing a single line without any segment styling.
+        </p>
+        <elevation-profile id="profile-basic" locale="de-CH"></elevation-profile>
+      </div>
+
+      <!-- Example 2: Multiple Lines (MultiLineString) -->
+      <div class="example-card">
+        <div class="example-header">
+          <h2>Multiple Lines (MultiLineString)</h2>
+        </div>
+        <p class="example-description">
+          Elevation profile with multiple disconnected line segments (e.g., separated by a ferry or bus connection). The gap between segments is clearly visible.
+        </p>
+        <elevation-profile id="profile-multi" locale="de-CH"></elevation-profile>
+      </div>
+
+      <!-- Example 3: Line with Surface Segments -->
+      <div class="example-card">
+        <div class="example-header">
+          <h2>Line with Surface Segments</h2>
+        </div>
+        <p class="example-description">
+          Shows different surface types (paved, unpaved, stairs) along the elevation profile using the <code>lineSegments</code> property.
+        </p>
+        <elevation-profile id="profile-segments" locale="de-CH"></elevation-profile>
+        <div class="legend">
+          <div class="legend-title">Surface Types</div>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #2ecc71;"></div>
+              <span>Paved</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color dashed" style="color: #e67e22;"></div>
+              <span>Unpaved</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #9b59b6;"></div>
+              <span>Stairs</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #f2000c;"></div>
+              <span>Tunnel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 4: Full Featured with Trail Bands -->
+      <div class="example-card">
+        <div class="example-header">
+          <h2>Full Featured with Trail Bands</h2>
+        </div>
+        <p class="example-description">
+          Complete example showing both surface segments and trail category bands below the x-axis using <code>lineSegments</code> and <code>xAxisSegments</code>.
+        </p>
+        <elevation-profile id="profile-full" locale="de-CH"></elevation-profile>
+        <div class="legend">
+          <div class="legend-title">Surface Types & Trail Categories</div>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #2ecc71;"></div>
+              <span>Paved</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color dashed" style="color: #e67e22;"></div>
+              <span>Unpaved</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #1abc9c;"></div>
+              <span>Above Ground</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #e7ab3c;"></div>
+              <span>Wanderweg</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #3498db;"></div>
+              <span>Other</span>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="export-svg" class="btn">
+            <span>↓</span>
+            <span>Export as SVG</span>
+          </button>
+        </div>
+      </div>
     </div>
-    <button id="set-lines">multi linestring</button>
-    <button id="set-line">linestring</button>
-    <button id="save">save as png</button>
 
-    <pre id="logs"></pre>
+    <script type="module">
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDemo);
+      } else {
+        initDemo();
+      }
 
-    <script>
-      const profile = document.querySelector("elevation-profile");
-      const tooltip = document.querySelector("#tooltip");
-      const logs = document.querySelector("#logs");
-      const setLines = document.querySelector("#set-lines");
-      const setLine = document.querySelector("#set-line");
-      const save = document.querySelector("#save");
+      function initDemo() {
+        // Profiles
+        const profileBasic = document.querySelector("#profile-basic");
+        const profileMulti = document.querySelector("#profile-multi");
+        const profileSegments = document.querySelector("#profile-segments");
+        const profileFull = document.querySelector("#profile-full");
 
-      save.addEventListener("click", () => {
-        const svg = profile.innerHTML;
-        const blob = new Blob([svg], { type: "image/svg+xml" });
-        const url = URL.createObjectURL(blob);
+        const tooltip = document.querySelector("#tooltip");
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "elevation.svg";
-        a.click();
+      // Sample data - single line
+      const singleLineBasic = [
+        [
+          [937484.88, 5937783.93, 441.26, 0],
+          [937468.19, 5937779.04, 441.4, 11.86],
+          [937455.94, 5937775.77, 441.61, 20.5],
+          [937445.92, 5937772.51, 441.8, 27.68],
+          [937439.24, 5937770.88, 441.94, 32.36],
+          [937432.56, 5937769.25, 442.1, 37.05],
+          [937424.77, 5937769.25, 442.25, 42.36],
+          [937416.98, 5937767.62, 442.4, 47.79],
+          [937398.05, 5937767.62, 442.97, 60.69],
+          [937386.92, 5937767.62, 443.27, 68.27],
+          [937384.7, 5937767.62, 443.34, 69.79],
+          [937369.11, 5937769.25, 443.7, 80.47],
+          [937354.64, 5937765.98, 444.14, 90.58],
+          [937353.53, 5937765.98, 444.2, 91.34],
+          [937355.75, 5937754.56, 444.69, 99.27],
+          [937355.75, 5937751.3, 444.9, 101.49],
+          [937361.32, 5937733.36, 445.89, 114.3],
+          [937366.89, 5937705.62, 447.4, 133.58],
+          [937373.56, 5937687.68, 448.3, 146.63],
+          [937374.68, 5937681.15, 448.7, 151.14],
+          [937373.56, 5937679.52, 448.79, 152.49],
+          [937372.45, 5937677.89, 448.9, 153.84],
+          [937371.34, 5937672.99, 449.2, 157.26],
+          [937365.77, 5937668.1, 449.36, 162.31],
+          [937364.66, 5937666.47, 449.38, 163.66],
+          [937340.17, 5937656.68, 449.4, 181.63],
+          [937330.15, 5937651.78, 449.3, 189.23],
+          [937324.58, 5937648.52, 449.3, 193.63],
+          [937311.23, 5937640.36, 449.09, 204.3],
+          [937306.77, 5937637.1, 449, 208.06],
+          [937304.55, 5937633.84, 448.99, 210.75],
+          [937303.43, 5937632.21, 448.97, 212.1],
+          [937302.32, 5937630.58, 448.9, 213.44],
+          [937296.75, 5937622.42, 448.85, 220.17],
+          [937294.53, 5937619.16, 448.8, 222.87],
+          [937290.07, 5937611, 448.7, 229.2],
+          [937277.83, 5937591.42, 448.4, 244.94],
+          [937273.38, 5937581.63, 448.31, 252.27],
+          [937267.81, 5937571.84, 448.21, 259.94],
+          [937266.7, 5937568.58, 448.1, 262.29],
+          [937265.58, 5937568.58, 448.16, 263.05],
+          [937263.36, 5937563.69, 448.1, 266.72],
+          [937258.91, 5937558.79, 448.1, 271.23],
+          [937255.57, 5937555.53, 448.1, 274.41],
+          [937252.23, 5937550.64, 448.04, 278.45],
+          [937250, 5937549, 448, 280.33],
+          [937241.09, 5937540.85, 448, 288.56],
+          [937233.3, 5937537.58, 448, 294.32],
+          [937223.28, 5937532.69, 448.1, 301.92],
+          [937186.55, 5937521.27, 448.5, 328.14],
+          [937138.68, 5937503.33, 449, 362.98],
+          [937129.77, 5937500.06, 449.1, 369.45],
+          [937121.98, 5937496.8, 449.2, 375.21],
+          [937111.96, 5937491.91, 449.3, 382.81],
+          [937107.51, 5937488.64, 449.4, 386.57],
+          [937100.83, 5937485.38, 449.45, 391.63],
+          [937088.59, 5937480.49, 449.6, 400.62],
+          [937070.78, 5937470.7, 449.77, 414.48],
+          [937040.72, 5937452.75, 450.1, 438.34],
+          [937028.47, 5937446.23, 450.29, 447.79],
+          [937026.25, 5937446.23, 450.3, 449.31],
+          [937025.13, 5937444.6, 450.33, 450.66],
+          [937011.78, 5937436.44, 450.6, 461.32],
+          [936958.34, 5937411.97, 452.69, 501.38],
+          [936912.7, 5937390.76, 454.35, 535.69],
+          [936853.7, 5937361.39, 456.72, 580.61],
+          [936847.02, 5937358.13, 456.9, 585.67],
+          [936839.23, 5937354.87, 457.2, 591.43],
+          [936832.55, 5937348.34, 457.41, 597.79],
+          [936829.21, 5937343.45, 457.49, 601.83],
+          [936823.65, 5937346.71, 457.3, 606.23],
+          [936816.97, 5937348.34, 457.31, 610.92],
+          [936805.84, 5937353.24, 457.25, 619.21],
+          [936802.5, 5937354.87, 457.2, 621.74],
+          [936800.27, 5937358.13, 457.1, 624.43],
+          [936793.59, 5937353.24, 457.2, 630.08],
+          [936789.14, 5937349.98, 457.3, 633.84],
+          [936785.8, 5937349.98, 457.31, 636.11],
+          [936773.55, 5937348.34, 457.4, 644.53],
+          [936747.95, 5937345.08, 457.6, 662.13],
+          [936688.95, 5937341.82, 458.9, 702.4],
+          [936667.8, 5937338.56, 459.3, 716.99],
+          [936648.87, 5937336.92, 459.6, 729.94],
+          [936622.16, 5937335.29, 460.03, 748.18],
+          [936608.8, 5937332.03, 460.3, 757.55],
+          [936594.33, 5937328.77, 460.6, 767.66],
+          [936584.31, 5937327.14, 460.74, 774.58],
+          [936580.97, 5937325.5, 460.8, 777.12],
+          [936564.27, 5937318.98, 461.21, 789.34],
+          [936569.84, 5937314.09, 461.41, 794.39],
+          [936578.74, 5937315.72, 462.42, 800.56],
+          [936579.86, 5937315.72, 462.48, 801.32],
+          [936582.08, 5937301.03, 464.37, 811.44],
+        ],
+      ];
+
+      // Multi-line data (two separate trails with a gap representing a ferry/bus connection)
+      const multiLineData = [
+        [
+          [750639.57, 5908792.26, 442.5, 0],
+          [750609.52, 5908759.74, 444.2, 45],
+          [750591.7, 5908741.85, 445.8, 85],
+          [750566.1, 5908719.09, 447.3, 125],
+          [750539.38, 5908697.95, 448.9, 165],
+          [750507.1, 5908673.56, 450.1, 205],
+          [750460.35, 5908639.41, 451.8, 260],
+          [750429.18, 5908618.28, 452.5, 300],
+          [750379.08, 5908582.5, 453.2, 360],
+          [750297.82, 5908527.22, 454.0, 450],
+        ],
+        [
+          [747569.38, 5908385.76, 465.5, 650],
+          [747587.19, 5908366.25, 466.8, 690],
+          [747660.66, 5908288.2, 468.2, 780],
+          [747686.27, 5908260.56, 469.5, 820],
+          [747700.74, 5908244.3, 470.3, 850],
+          [747737.47, 5908205.28, 471.8, 910],
+          [747767.53, 5908171.13, 473.2, 960],
+          [747785.34, 5908150, 474.5, 995],
+          [747798.7, 5908132.11, 475.8, 1025],
+          [747802.04, 5908125.61, 476.4, 1045],
+        ],
+      ];
+
+      // Load all examples immediately
+      profileBasic.lines = singleLineBasic;
+
+      profileMulti.lines = multiLineData;
+
+      profileSegments.lines = singleLineBasic;
+      profileSegments.lineSegments = [
+        [0, 37, "paved"],
+        [37, 38, "tunnel"],
+        [38, 70, "paved"],
+        [70, 80, "stairs"],
+        [80, 95, "unpaved"],
+      ];
+
+      profileFull.lines = multiLineData;
+      profileFull.lineSegments = [
+        [0, 5, "paved"],
+        [5, 8, "aboveground"],
+        [8, 9, "unpaved"],
+        [11, 15, "paved"],
+        [15, 20, "unpaved"],
+      ];
+      profileFull.xAxisSegments = [
+        [0, 7, "other"],
+        [7, 9, "wanderweg"],
+        [11, 16, "other"],
+        [16, 20, "wanderweg"],
+      ];
+
+      // Export SVG button handler
+      const exportBtn = document.querySelector("#export-svg");
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          const svg = profileFull.innerHTML;
+          const blob = new Blob([svg], { type: "image/svg+xml" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "elevation-profile.svg";
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      // Event handlers for all profiles
+      const profiles = [profileBasic, profileMulti, profileSegments, profileFull];
+
+      profiles.forEach(profile => {
+        profile.addEventListener("over", (event) => {
+          const rect = profile.getBoundingClientRect();
+          const absoluteX = rect.left + event.detail.position.x + window.scrollX;
+          const absoluteY = rect.top + event.detail.position.y + window.scrollY;
+
+          // Format all available data
+          const data = event.detail;
+          const coord = data.coordinate;
+          let tooltipText = `Elevation: ${coord[2]} m\n`;
+          tooltipText += `Distance: ${coord[3]} m\n`;
+          tooltipText += `X: ${coord[0].toFixed(2)}\n`;
+          tooltipText += `Y: ${coord[1].toFixed(2)}`;
+
+          // Add segment information if available
+          if (data.segments) {
+            if (data.segments.line !== null) {
+              tooltipText += `\nLine Segment: ${data.segments.line}`;
+            }
+            if (data.segments.xAxis !== null) {
+              tooltipText += `\nTrail: ${data.segments.xAxis}`;
+            }
+          }
+
+          tooltip.style.display = "block";
+          tooltip.textContent = tooltipText;
+          tooltip.style.left = `${absoluteX}px`;
+          tooltip.style.top = `${absoluteY}px`;
+        });
+
+        profile.addEventListener("out", () => {
+          tooltip.style.display = "none";
+        });
       });
-
-      setLine.addEventListener("click", () => {
-        profile.lines = [
-          [
-            [
-              2752448.6890149354,
-              1212435.0280630554,
-              570,
-              0
-            ],
-            [
-              2750063.3798349514,
-              1212552.370432813,
-              480,
-              480
-            ],
-            [
-              2749668.7007208047,
-              1212135.4200102754,
-              656.9,
-              1000
-            ],
-            [
-              2748077.860283412,
-              1211515.1656088883,
-              1012.8,
-              1500
-            ],
-            [
-              2744845.780407053,
-              1205982.2556253774,
-              1003.2,
-              2000
-            ]
-          ]
-        ];
-        profile.points = [];
-      });
-
-      setLines.addEventListener("click", () => {
-        profile.lines = [
-          [
-            [740073, 5905947, 434, 0],
-            [740073, 5905947, 485, 25],
-            [740073, 5905947, 490, 60],
-            [740072, 5905940, 512, 100],
-          ],
-          [
-            [740007, 5905729, 490, 155],
-            [740000, 5905709, 489, 169],
-            [739997, 5905704, 501, 173],
-            [739997, 5905704, 512, 180],
-            [739997, 5905704, 501, 210],
-          ], [
-            [740007, 5905729, 512, 255],
-            [740000, 5905709, 505, 369],
-            [739997, 5905704, 501, 390],
-          ]
-        ];
-
-        profile.points = [
-          [740073, 5905947, 434, 0],
-          [740073, 5905947, 490, 60],
-          [739997, 5905704, 512, 180],
-          [739997, 5905704, 501, 390],
-        ];
-      });
-
-      profile.addEventListener("over", (event) => {
-        logs.textContent = JSON.stringify(event.detail, null, 2);
-        tooltip.style.display = "block";
-        tooltip.textContent = `${event.detail.coordinate[2]} m`;
-        tooltip.style.left = `${event.detail.position.x}px`;
-        tooltip.style.top = `${event.detail.position.y - 20}px`;
-      });
-      profile.addEventListener("out", (event) => {
-        logs.textContent = "";
-        tooltip.style.display = "none";
-      });
-
-      setLines.click();
-
+      }
     </script>
   </body>
 </html>
