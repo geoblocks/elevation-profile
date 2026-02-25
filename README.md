@@ -140,7 +140,7 @@ If `pointerEvents` is `true`, the component will emit the following custom event
 
 | Name            | When                                        | Detail type                                                | Description
 | --------------- | ------------------------------------------- | ---------------------------------------------------------- | -----------
-| `over`          | The pointer is over the profile  | `{coordinate: number[], position: {x: number, y: number}, segments?: {line: string | null, xAxis: string | null}}` | `coordinate` is the coordinate of the point on the MultiLineString, `position` is the position of the pointer relative to the component, and `segments` contains the segment values at the pointer location
+| `over`          | The pointer is over the profile  | `{coordinate: number[], position: {x: number, y: number}, segments?: {line: string \| null, xAxis: string \| null}}` | `coordinate` is the coordinate of the point on the MultiLineString, `position` is the position of the pointer relative to the component, and `segments` contains the segment values at the pointer location
 | `out`           | The pointer leaves the profile   |  |
 
 ### Styling
