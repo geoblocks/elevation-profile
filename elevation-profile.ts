@@ -193,6 +193,7 @@ export default class ElevationProfile extends LitElement {
           pointer-events="${this.pointerEvents ? 'all' : 'none'}"
           style="display: block; touch-action: none;"
           @pointermove="${this.pointerMove}"
+          @click="${this.pointerMove}"
           @pointerout="${this.pointerOut}"
         />
         <g
@@ -213,7 +214,7 @@ export default class ElevationProfile extends LitElement {
     if (this.lineSegmentsData.length === 0 && this.plotData.length >= 2) {
       return svg`<path class="${className}" d="${this.line(this.plotData)}" fill="none" />`;
     }
-    
+
     return this.lineSegmentsData.map(([start, end, value]) => {
       const segmentData = this.plotData.slice(start, end + 1);
       console.assert(segmentData.length >= 2);
