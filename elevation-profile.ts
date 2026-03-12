@@ -261,8 +261,6 @@ export default class ElevationProfile extends LitElement {
       })
       this.yAxisObserver.observe(axisY);
     }
-    // FIXME: because the ref element are used before render is done, we need to force an update
-    this.requestUpdate();
   }
 
   override disconnectedCallback() {
