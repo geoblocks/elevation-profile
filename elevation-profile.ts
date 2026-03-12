@@ -228,6 +228,8 @@ export default class ElevationProfile extends LitElement {
        const x2 = this.scaleX(this.plotData[end].x);
        console.assert(this.plotData[start].x < this.plotData[end].x);
        const bandWidth = x2 - x1;
+       // Skip rendering if width is negative or zero (happens when scale range is invalid)
+       if (bandWidth <= 0) return svg``;
        return svg`<rect class="trail-band" data-value="${ifDefined(value)}" x="${x1}" width="${bandWidth}" />`;
      });
    }
@@ -259,8 +261,6 @@ export default class ElevationProfile extends LitElement {
       })
       this.yAxisObserver.observe(axisY);
     }
-    // FIXME: because the ref element are used before render is done, we need to force an update
-    this.requestUpdate();
   }
 
   override disconnectedCallback() {
