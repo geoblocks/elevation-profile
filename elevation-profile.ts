@@ -7,12 +7,13 @@ import type {PropertyValues, TemplateResult} from 'lit';
 
 import {extent, bisector} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
+import type {ScaleLinear} from 'd3-scale';
 import {line, area} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select, pointer} from 'd3-selection';
 
 // FIXME: use simplify to reduce number of points based on tolerance
-import simplify from './simplify.js';
+// import simplify from './simplify.js';
 
 type PlotPoint = {
   x: number;
@@ -37,7 +38,7 @@ export default class ElevationProfile extends LitElement {
   @property({type: String}) locale = navigator.language;
   @property({type: Array}) lines: number[][][] = [];
   @property({type: Array}) points: number[][] = [];
-  @property() updateScale = (x: scaleLinear, y: scaleLinear, width: number, height: number): void => {};
+  @property() updateScale = (x: ScaleLinear<number, number>, y: ScaleLinear<number, number>, width: number, height: number): void => {};
   @property({type: Object}) margin = {top: 20, right: 20, bottom: 20, left: 20};
   @property({type: Object}) tickSize = {x: 100, y: 40};
   @property({type: Boolean}) pointerEvents = true;
@@ -60,16 +61,16 @@ export default class ElevationProfile extends LitElement {
 
   private bisectDistance = bisector((point: PlotPoint) => point.x);
 
-  private line = line()
-    .defined((point: PlotPoint) => !isNaN(point.y))
-    .x((point: PlotPoint) => this.scaleX(point.x))
-    .y((point: PlotPoint) => this.scaleY(point.y));
-  private area = area()
-    .defined((point: PlotPoint) => !isNaN(point.y))
-    .x((point: PlotPoint) => this.scaleX(point.x))
-    .y1((point: PlotPoint) => this.scaleY(point.y));
-  private xAxis = axisBottom(this.scaleX).tickFormat((value: number) => this.tickFormat(value, 'x'));
-  private yAxis = axisLeft(this.scaleY).tickFormat((value: number) => this.tickFormat(value, 'y'));
+  private line = line<PlotPoint>()
+    .defined((point) => !isNaN(point.y))
+    .x((point) => this.scaleX(point.x))
+    .y((point) => this.scaleY(point.y));
+  private area = area<PlotPoint>()
+    .defined((point) => !isNaN(point.y))
+    .x((point) => this.scaleX(point.x))
+    .y1((point) => this.scaleY(point.y));
+  private xAxis = axisBottom(this.scaleX).tickFormat((value) => this.tickFormat(+value, 'x'));
+  private yAxis = axisLeft(this.scaleY).tickFormat((value) => this.tickFormat(+value, 'y'));
   private xGrid = axisBottom(this.scaleX).tickFormat(() => '');
   private yGrid = axisLeft(this.scaleY).tickFormat(() => '');
 
@@ -104,8 +105,8 @@ export default class ElevationProfile extends LitElement {
          }
        });
 
-      this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x));
-      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y));
+      this.scaleX.domain(extent(this.plotData, (data: PlotPoint) => data.x) as [number, number]);
+      this.scaleY.domain(extent(this.plotData, (data: PlotPoint) => data.y) as [number, number]);
 
       this.updateScale(this.scaleX, this.scaleY, this.offsetWidth, this.offsetHeight);
     }
@@ -143,10 +144,10 @@ export default class ElevationProfile extends LitElement {
     this.yAxis.ticks(yTicks);
     this.yGrid.ticks(yTicks);
 
-    select(this.querySelector('.axis.x')).call(this.xAxis);
-    select(this.querySelector('.axis.y')).call(this.yAxis);
-    select(this.querySelector('.grid.x')).call(this.xGrid);
-    select(this.querySelector('.grid.y')).call(this.yGrid);
+    select(this.querySelector<SVGGElement>('.axis.x')!).call(this.xAxis);
+    select(this.querySelector<SVGGElement>('.axis.y')!).call(this.yAxis);
+    select(this.querySelector<SVGGElement>('.grid.x')!).call(this.xGrid);
+    select(this.querySelector<SVGGElement>('.grid.y')!).call(this.yGrid);
 
     const offset = this.yGrid.offset();
 
