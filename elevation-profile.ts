@@ -316,7 +316,7 @@ export default class ElevationProfile extends LitElement {
       x: 0,
       y: 0,
     };
-    this.dispatchEvent(new CustomEvent('out'));
+    this.dispatchEvent(new CustomEvent<void>('out'));
   }
 
   override createRenderRoot() {
@@ -400,5 +400,9 @@ function getSegmentValueAtIndex(segments: SegmentData, index: number): string | 
 declare global {
   interface HTMLElementTagNameMap {
     'elevation-profile': ElevationProfile;
+  }
+  interface GlobalEventHandlersEventMap {
+    over: CustomEvent<OverDetails>;
+    out: CustomEvent<void>;
   }
 }
