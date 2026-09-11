@@ -1,5 +1,4 @@
 import {defineConfig} from 'vite';
-import dts from 'vite-plugin-dts';
 
 export default defineConfig(({mode}) => {
   if (mode === 'lib') {
@@ -15,7 +14,6 @@ export default defineConfig(({mode}) => {
           external: [/^lit/, /^d3-/, /^@lit-labs\/observers/],
         },
       },
-      plugins: [dts({include: ['elevation-profile.ts']})],
     };
   }
   return {
