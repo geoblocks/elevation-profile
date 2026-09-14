@@ -151,8 +151,6 @@ If `pointerEvents` is `true`, the component will emit the following custom event
 
 ### Styling
 
-FIXME: TBD
-
 | CSS class                 | SVG type | Description
 | ------------------------- | -------- | -----------
 | `.elevation`              | `path`   | The elevation line
@@ -164,3 +162,6 @@ FIXME: TBD
 | `.pointer-circle`         | `circle` | On pointer over, the circle that follows the pointer
 | `.pointer-circle-outline` | `circle` | On pointer over, the outline of the circle that follows the pointer
 | `.trail-band`             | `rect`   | The trail category bands below the x-axis
+| `.axis.x` / `.axis.y`     | `g`      | The x/y axis ticks and labels
+| `.grid.x` / `.grid.y`     | `g`      | The x/y gridlines
+| `.axis`                   | `g`      | Baseline under the x-axis, visible only when `lines` is non-empty
