@@ -272,18 +272,15 @@ export default class ElevationProfile extends LitElement {
   }
 
   private pointerMove(event: PointerEvent) {
-    const pointerDistance = this.scaleX.invert(pointer(event)[0]);
-    const index = Math.min(this.bisectDistance.left(this.plotData, pointerDistance), this.plotData.length - 1);
-
-    if (index < 0) {
+    if (this.plotData.length === 0) {
       return;
     }
-    // FIXME:
-    // var d0 = this.plotData[index - 1]
-    // var d1 = this.plotData[index];
-    // // work out which date value is closest to the mouse
-    // var d = mouseDate - d0[0] > d1[0] - mouseDate ? d1 : d0;
-
+    const pointerDistance = this.scaleX.invert(pointer(event)[0]);
+    let index = this.bisectDistance.center(this.plotData, pointerDistance);
+    if (index > 0 && isNaN(this.plotData[index].y)) {
+      // a gap point shares the x of the preceding point, which is the real nearest one
+      index -= 1;
+    }
     const data = this.plotData[index];
 
     if (isNaN(data.y)) {
