@@ -416,6 +416,21 @@
           </button>
         </div>
       </div>
+
+      <!-- Example 5: Performance Test with Large Point Count -->
+      <div class="example-card">
+        <div class="example-header">
+          <h2>Performance Test (Large Point Count)</h2>
+        </div>
+        <p class="example-description">
+          Synthetic profile with a large number of points, used to measure <code>pointerMove</code> performance while hovering.
+        </p>
+        <elevation-profile id="profile-perf" locale="de-CH"></elevation-profile>
+        <div id="perf-stats" class="legend">
+          <div class="legend-title">Pointer Move Timing</div>
+          <div id="perf-stats-content">Move the pointer over the chart to measure.</div>
+        </div>
+      </div>
     </div>
 
     <script type="module">
@@ -432,6 +447,7 @@
         const profileMulti = document.querySelector("#profile-multi");
         const profileSegments = document.querySelector("#profile-segments");
         const profileFull = document.querySelector("#profile-full");
+        const profilePerf = document.querySelector("#profile-perf");
 
         const tooltip = document.querySelector("#tooltip");
 
@@ -590,6 +606,47 @@
         [11, 16, "other"],
         [16, 20, "wanderweg"],
       ];
+
+      // Synthetic large profile for pointerMove performance testing
+      function generateLargeProfile(numPoints) {
+        const points = [];
+        let x = 937484.88;
+        let y = 5937783.93;
+        let elevation = 441.26;
+        let distance = 0;
+        const step = 5;
+        for (let i = 0; i < numPoints; i++) {
+          x += step * Math.cos(i * 0.01);
+          y += step * Math.sin(i * 0.01);
+          elevation += Math.sin(i * 0.05) * 0.5;
+          distance += step;
+          points.push([x, y, elevation, distance]);
+        }
+        return [points];
+      }
+
+      const NUM_PERF_POINTS = 50000;
+      profilePerf.lines = generateLargeProfile(NUM_PERF_POINTS);
+
+      const perfStatsContent = document.querySelector("#perf-stats-content");
+      let perfSampleCount = 0;
+      let perfTotalMs = 0;
+      let perfMaxMs = 0;
+      let lastPointerMoveStart = 0;
+
+      profilePerf.addEventListener("pointermove", () => {
+        lastPointerMoveStart = performance.now();
+      }, { capture: true });
+
+      profilePerf.addEventListener("over", () => {
+        const elapsedMs = performance.now() - lastPointerMoveStart;
+        perfSampleCount++;
+        perfTotalMs += elapsedMs;
+        perfMaxMs = Math.max(perfMaxMs, elapsedMs);
+        const avgMs = perfTotalMs / perfSampleCount;
+        perfStatsContent.textContent =
+          `Points: ${NUM_PERF_POINTS} | Samples: ${perfSampleCount} | Last: ${elapsedMs.toFixed(3)} ms | Avg: ${avgMs.toFixed(3)} ms | Max: ${perfMaxMs.toFixed(3)} ms`;
+      });
 
       // Export SVG button handler
       const exportBtn = document.querySelector("#export-svg");
