@@ -45,6 +45,8 @@ export default class ElevationProfile extends LitElement {
   @property({type: Array}) lineSegments?: SegmentData;
   @property({type: Array}) xAxisSegments?: SegmentData;
   private yAxisObserver: ResizeObserver | null = null;
+  private static nextUid = 0;
+  private readonly uid = ElevationProfile.nextUid++;
 
   @state() pointer = {x: 0, y: 0};
   private resizeController = new ResizeController(this, {
@@ -164,7 +166,10 @@ export default class ElevationProfile extends LitElement {
         )}
 
         <g style="visibility: ${this.pointer.x > 0 ? 'visible' : 'hidden'}">
-          <g clip-path="polygon(0 0, ${this.pointer.x - ml} 0, ${this.pointer.x - ml} 100%, 0 100%)">
+          <clipPath id="pointer-clip-${this.uid}">
+            <rect x="0" y="0" width="${Math.max(0, this.pointer.x)}" height="${height}" />
+          </clipPath>
+          <g clip-path="url(#pointer-clip-${this.uid})">
             ${guard([this.lines, width, height, ml], () => this.renderLineSegments('elevation highlight'))}
           </g>
           <line
@@ -385,8 +390,17 @@ function fillUnspecified(segment: SegmentData, length: number, gapPositions: num
 }
 
 function getSegmentValueAtIndex(segments: SegmentData, index: number): string | null {
-  for (const [start, end, value] of segments) {
-    if (index >= start && index < end) {
+  // segments are sorted, non-overlapping and contiguous (guaranteed by fillUnspecified)
+  let lo = 0;
+  let hi = segments.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    const [start, end, value] = segments[mid];
+    if (index < start) {
+      hi = mid - 1;
+    } else if (index >= end) {
+      lo = mid + 1;
+    } else {
       return value;
     }
   }
